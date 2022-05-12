@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "safeway-data"
+version = "0.1.0"
+description = "Data mining tools for Safeway app"
+authors = ["Evgeny Demchenko <little_pea@list.ru>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

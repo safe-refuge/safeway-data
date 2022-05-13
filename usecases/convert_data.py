@@ -1,7 +1,7 @@
 import logging
 
 from dataclasses import dataclass
-from typing import Callable, Optional
+from typing import Callable
 
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ class ConvertSpreadsheetData:
     - save
     """
 
-    # Dependencies
+    # Injected dependencies
     fetcher: Callable
     adapter: Callable
     repository: Callable
@@ -30,13 +30,10 @@ class ConvertSpreadsheetData:
         return self.transformed_data
 
     def fetch_source_data(self):
-        # TODO: implement
-        self.source_data = self.fetcher()
+        self.source_data = self.fetcher.fetch()
 
     def transform_data(self):
-        # TODO: implement
         self.transformed_data = self.adapter(self.source_data)
 
     def persist(self):
-        # TODO: implement
         self.repository(self.transformed_data)

@@ -4,16 +4,15 @@ Implemented use cases with dependencies injected
 https://proofit404.github.io/dependencies/
 """
 from dependencies import Injector
-from dependencies import Package
 
-adapters = Package("adapters")
-usecases = Package("usecases")
-services = Package("services")
-repositories = Package("repositories")
+from adapters import spreadsheet
+from usecases import convert_data
+from services import google_sheets
+from repositories import csv
 
 
 class ConvertSpreadsheetData(Injector):
-    usecase = usecases.convert_data.ConvertSpreadsheetData
-    fetcher = services.google_sheets.fetch_spreadsheet_data
-    adapter =  adapters.spreadsheet.transform
-    repository = repositories.csv.save_data_to_csv
+    usecase = convert_data.ConvertSpreadsheetData
+    fetcher = google_sheets.GoogleSheetsService
+    adapter =  spreadsheet.transform
+    repository = csv.save_data_to_csv

@@ -18,6 +18,18 @@ cd safeway-data
 poetry install
 ```
 
+## Preparation
+
+In order to access Google Sheets, you'll need to prepare some secrets such as `DEVELOPER_KEY`.
+
+You can place them in `config/.env` file menually or ask @littlepea to provide you a file with secrets.
+
+If you want to fill out the secrets manually you can start from this template:
+
+```shell
+cp config/.env.example config/.env
+```
+
 ## Usage
 
 ```shell

@@ -22,12 +22,14 @@ UA = [HEADERS, SAMPLE_ROW]
 PL = [HEADERS, SAMPLE_ROW2, REAL_ROW]
 
 
-@impure_safe
 def fake_make_request(request):
-    return PL
+    return {
+        "range": "PL!A4:L",
+        "values": PL
+    }
 
 
 def test_spreadsheet_data_conversion():
     usecase = ConvertSpreadsheetData(make_request=fake_make_request).usecase
     result = usecase.convert(output="result.csv")
-    assert not result
+    assert len(result) == 2

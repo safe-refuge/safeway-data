@@ -1,29 +1,25 @@
+import re
+
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, List
 
 from googleapiclient.discovery import build
 from googleapiclient.http import HttpRequest
-from returns.io import IOResult, impure_safe
+from returns.io import impure_safe
 from returns.pipeline import flow
 from returns.pointfree import bind_ioresult
-
-# If modifying these scopes, delete the file token.json.
 from returns.result import safe
-from returns.unsafe import unsafe_perform_io
 
 from config.settings import Settings
+from models.spreadsheet_row import SpreadsheetRow
+
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
-# The ID and range of a sample spreadsheet.
-DEFAULT_SPREADSHEET_ID = "1Y1QLbJ6gvPvz8UI-TTIUUWv5bDpSNeUVY3h-7OV6tj0"
-SAMPLE_RANGE_NAME = 'PL!A4:L'
 
-
-@impure_safe
-def make_request(request: HttpRequest) -> list:
+def make_request(request: HttpRequest) -> dict:
     result = request.execute()
-    return result['values']
+    return result
 
 
 @dataclass
@@ -33,19 +29,43 @@ class GoogleSheetsService:
     settings: Settings
     make_request: Callable = make_request
 
-    def fetch(self) -> list:
+    @impure_safe
+    def fetch(self, spreadsheet_id: str) -> List[SpreadsheetRow]:
         service = build('sheets', 'v4', developerKey="AIzaSyDGCDWPMyHsS19-cs2TZ9OkGd06fZac3Eo")
+        sheet = self.settings.countries[0]  # TODO: loop through all countries
         request: HttpRequest = service.spreadsheets().values().get(
-            spreadsheetId=DEFAULT_SPREADSHEET_ID,
-            range=SAMPLE_RANGE_NAME)
+            spreadsheetId=spreadsheet_id,
+            range=f"{sheet}!{self.settings.cells_range}")
 
-        result = flow(request, self.make_request, bind_ioresult(self.process_response))
-        # result.failure()._inner_value.reason
-        # TODO: implement
+        response = self.make_request(request)
+        result = self.process_response(response)
 
-        perform_io = unsafe_perform_io(result)
-        return []
+        return result
 
-    @safe
-    def process_response(self, response: list) -> list:
-        return response
+    def process_response(self, response: dict) -> List[SpreadsheetRow]:
+        country = response["range"].split("!")[0]
+        rows = response["values"]
+        headers: List[str] = [self.normalize_header(header) for header in rows[0]]
+        rows: List[SpreadsheetRow] = [self.generate_row(values, headers, country) for values in rows[1:]]
+        return rows
+
+    def normalize_header(self, header: str) -> str:
+        """
+        Converts values to fields for `SpreadsheetRow`
+
+        Examples::
+            Opening hours/days -> opening_hours
+            E-mail -> email
+        """
+        snake_case = re.sub(r"\s", "_", header.lower()).replace("-", "")
+        normalized = re.split(r"\W", snake_case)[0]
+        return normalized
+
+    def generate_row(self, values: List[str], headers: List[str], country: str) -> SpreadsheetRow:
+        row_data = {"country_code": country}
+        for key, value in zip(headers, values):
+            row_data[key] = value
+
+        row = SpreadsheetRow(**row_data)
+
+        return row

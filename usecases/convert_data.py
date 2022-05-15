@@ -3,6 +3,12 @@ import logging
 from dataclasses import dataclass
 from typing import Callable
 
+from returns._internal.pipeline.flow import flow
+from returns.pointfree import bind_ioresult, bind, map_
+from returns.unsafe import unsafe_perform_io
+
+from adapters.spreadsheet_adapter import SpreadsheetAdapter
+from config.settings import Settings
 
 logger = logging.getLogger(__name__)
 
@@ -18,22 +24,21 @@ class ConvertSpreadsheetData:
     """
 
     # Injected dependencies
+    settings: Settings
     fetcher: Callable
-    adapter: Callable
+    adapter: SpreadsheetAdapter
     repository: Callable
 
     def convert(self, output: str):
-        self.output = output
-        self.fetch_source_data()
-        self.transform_data()
-        self.persist()
-        return self.transformed_data
+        result = flow(
+            self.settings.spreadsheet_id,
+            self.fetcher.fetch,
+            bind_ioresult(self.adapter.transform),
+            self.repository
+        )
+        # TODO: deal with failures
+        # result.failure()._inner_value.reason
+        # perform_io = unsafe_perform_io(result)
+        # saved_data = unsafe_perform_io(result)
 
-    def fetch_source_data(self):
-        self.source_data = self.fetcher.fetch()
-
-    def transform_data(self):
-        self.transformed_data = self.adapter(self.source_data)
-
-    def persist(self):
-        self.repository(self.transformed_data)
+        return result

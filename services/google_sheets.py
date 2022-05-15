@@ -6,9 +6,6 @@ from typing import Callable, List
 from googleapiclient.discovery import build
 from googleapiclient.http import HttpRequest
 from returns.io import impure_safe
-from returns.pipeline import flow
-from returns.pointfree import bind_ioresult
-from returns.result import safe
 
 from config.settings import Settings
 from models.spreadsheet_row import SpreadsheetRow
@@ -23,7 +20,7 @@ def make_request(request: HttpRequest) -> dict:
 
 
 @dataclass
-class GoogleSheetsService:
+class GoogleSheetsReader:
 
     # Injected dependencies
     settings: Settings

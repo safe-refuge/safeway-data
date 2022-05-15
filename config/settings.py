@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     spreadsheet_id: str = Field(DEFAULT_SPREADSHEET_ID, env="SPREADSHEET_ID")
     cells_range: str = Field(DEFAULT_RANGE, env="CELLS_RANGE")
     countries: List[str] = ["UA", "PL"]
+    output_file: str = "output.csv"
 
     class Config:
         env_file = "config/.env.example"

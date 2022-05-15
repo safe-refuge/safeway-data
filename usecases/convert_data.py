@@ -1,14 +1,15 @@
 import logging
 
 from dataclasses import dataclass
-from typing import Callable
 
 from returns._internal.pipeline.flow import flow
-from returns.pointfree import bind_ioresult, bind, map_
+from returns.pointfree import bind_ioresult
 from returns.unsafe import unsafe_perform_io
 
 from adapters.spreadsheet_adapter import SpreadsheetAdapter
 from config.settings import Settings
+from repositories.csv import CSVWriter
+from services.google_sheets import GoogleSheetsReader
 
 logger = logging.getLogger(__name__)
 
@@ -25,20 +26,21 @@ class ConvertSpreadsheetData:
 
     # Injected dependencies
     settings: Settings
-    fetcher: Callable
+    reader: GoogleSheetsReader
     adapter: SpreadsheetAdapter
-    repository: Callable
+    writer: CSVWriter
 
     def convert(self, output: str):
         result = flow(
             self.settings.spreadsheet_id,
-            self.fetcher.fetch,
+            self.reader.fetch,
             bind_ioresult(self.adapter.transform),
-            self.repository
+            self.writer.write
         )
         # TODO: deal with failures
         # result.failure()._inner_value.reason
         # perform_io = unsafe_perform_io(result)
-        # saved_data = unsafe_perform_io(result)
 
-        return result
+        saved_data = unsafe_perform_io(result).unwrap()
+
+        return saved_data

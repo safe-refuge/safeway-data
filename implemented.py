@@ -15,9 +15,9 @@ from config import settings
 class ConvertSpreadsheetData(Injector):
     usecase = convert_data.ConvertSpreadsheetData
     settings = settings.Settings(_env_file="config/.env.example")
-    fetcher = google_sheets.GoogleSheetsService
+    reader = google_sheets.GoogleSheetsReader
     adapter = spreadsheet_adapter.SpreadsheetAdapter
-    repository = csv.save_data_to_csv
+    writer = csv.CSVWriter
 
 
 class ConvertSpreadsheetDataLocally(ConvertSpreadsheetData):

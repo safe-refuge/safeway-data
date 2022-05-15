@@ -1,3 +1,5 @@
+from io import StringIO
+
 from returns.io import impure_safe
 
 from implemented import ConvertSpreadsheetData
@@ -21,6 +23,9 @@ REAL_ROW = ['The Association for Legal Intervention', 'Warszawa', 'ul. Siedmiogr
 UA = [HEADERS, SAMPLE_ROW]
 PL = [HEADERS, SAMPLE_ROW2, REAL_ROW]
 
+FILES = {}
+FILE_VALUES = []
+
 
 def fake_make_request(request):
     return {
@@ -29,7 +34,25 @@ def fake_make_request(request):
     }
 
 
+def fake_open_file(path):
+    FILES[path] = StringIO()
+    return FILES[path]
+
+
+def fake_close_file(file):
+    FILE_VALUES.append(file.getvalue())
+    file.close()
+
+
 def test_spreadsheet_data_conversion():
-    usecase = ConvertSpreadsheetData(make_request=fake_make_request).usecase
+    usecase = ConvertSpreadsheetData(
+        make_request=fake_make_request,
+        open_file=fake_open_file,
+        close_file=fake_close_file).usecase
+
     result = usecase.convert(output="result.csv")
+    csv = FILE_VALUES[0]
+    expected_row = "The Ukrainian House,Poland,Warszawa,\"ul. Zamenhofa 1, 00-153\",52.24734033,20.9964833,General,Fundacja “Nasz Wybór”,Crisis support center"
+
     assert len(result) == 2
+    assert expected_row in csv

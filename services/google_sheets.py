@@ -18,8 +18,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 
 def make_request(request: HttpRequest) -> dict:
-    result = request.execute()
-    return result
+    return request.execute()
 
 
 @dataclass
@@ -38,9 +37,7 @@ class GoogleSheetsService:
             range=f"{sheet}!{self.settings.cells_range}")
 
         response = self.make_request(request)
-        result = self.process_response(response)
-
-        return result
+        return self.process_response(response)
 
     def process_response(self, response: dict) -> List[SpreadsheetRow]:
         country = response["range"].split("!")[0]
@@ -58,14 +55,11 @@ class GoogleSheetsService:
             E-mail -> email
         """
         snake_case = re.sub(r"\s", "_", header.lower()).replace("-", "")
-        normalized = re.split(r"\W", snake_case)[0]
-        return normalized
+        return re.split(r"\W", snake_case)[0]
 
     def generate_row(self, values: List[str], headers: List[str], country: str) -> SpreadsheetRow:
         row_data = {"country_code": country}
         for key, value in zip(headers, values):
             row_data[key] = value
 
-        row = SpreadsheetRow(**row_data)
-
-        return row
+        return SpreadsheetRow(**row_data)

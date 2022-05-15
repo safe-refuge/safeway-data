@@ -30,15 +30,14 @@ class ConvertSpreadsheetData:
     repository: Callable
 
     def convert(self, output: str):
-        result = flow(
-            self.settings.spreadsheet_id,
-            self.fetcher.fetch,
-            bind_ioresult(self.adapter.transform),
-            self.repository
-        )
         # TODO: deal with failures
         # result.failure()._inner_value.reason
         # perform_io = unsafe_perform_io(result)
         # saved_data = unsafe_perform_io(result)
 
-        return result
+        return flow(
+            self.settings.spreadsheet_id,
+            self.fetcher.fetch,
+            bind_ioresult(self.adapter.transform),
+            self.repository,
+        )

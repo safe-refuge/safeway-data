@@ -33,7 +33,7 @@ class SpreadsheetAdapter:
 
     def convert_country(self, country_code: str) -> str:
         country = pycountry.countries.get(alpha_2=country_code)
-        return country.name
+        return country.name if country else ""
 
     def convert_lat(self, latitude: str) -> str:
         return self._convert_number(latitude)

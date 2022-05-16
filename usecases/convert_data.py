@@ -30,7 +30,7 @@ class ConvertSpreadsheetData:
     adapter: SpreadsheetAdapter
     writer: CSVWriter
 
-    def convert(self, output: str):
+    def convert(self):
         result = flow(
             self.settings.spreadsheet_id,
             self.reader.fetch,

@@ -1,7 +1,5 @@
 from io import StringIO
 
-from returns.io import impure_safe
-
 from implemented import ConvertSpreadsheetData
 
 
@@ -50,7 +48,7 @@ def test_spreadsheet_data_conversion():
         open_file=fake_open_file,
         close_file=fake_close_file).usecase
 
-    result = usecase.convert(output="result.csv")
+    result = usecase.convert()
     csv = FILE_VALUES[0]
     expected_row = "The Ukrainian House,Poland,Warszawa,\"ul. Zamenhofa 1, 00-153\",52.24734033,20.9964833,General,Fundacja “Nasz Wybór”,Crisis support center"
 

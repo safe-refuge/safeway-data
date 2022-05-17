@@ -1,18 +1,26 @@
-from typing import Optional
+from typing import Optional, List
 
 import typer
 
-DEFAULT_SPREADSHEET_ID = "1Y1QLbJ6gvPvz8UI-TTIUUWv5bDpSNeUVY3h-7OV6tj0"
+import implemented
+from config.settings import Settings
+from models.point_of_interest import PointOfInterest
+from repositories.dumy import DummyWriter
 
 
-def main(output: Optional[str] = "data/result.csv", spreadsheet: Optional[str] = DEFAULT_SPREADSHEET_ID):
-    typer.echo(f"Loading records from spreadsheet: {spreadsheet}")
-    # TODO: implement data loading
+def main(dry_run: Optional[bool] = False):
+    settings = Settings(_env_file="config/.env")
 
-    # TODO: implement data transformation
+    typer.echo(f"Loading records from spreadsheet {settings.spreadsheet_id}")
 
-    # TODO: implement data saving
-    typer.echo(f"Saved results into {output}")
+    overrides = {"settings": settings}
+    if dry_run:
+        overrides["writer"] = DummyWriter
+
+    component = implemented.ConvertSpreadsheetData(**overrides)
+    results: List[PointOfInterest] = component.usecase.convert()
+
+    typer.echo(f"Saved {len(results)} results into {settings.output_file}")
 
 
 if __name__ == "__main__":

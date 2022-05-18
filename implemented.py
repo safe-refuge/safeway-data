@@ -10,7 +10,7 @@ from usecases import convert_data
 from services import google_sheets, geocoding
 from repositories import csv
 from config import settings
-from validation import error_collector, composite_validator, RequiredFieldsValidator
+from validation import error_collector, composite_validator, RequiredFieldsValidator, CategoriesValidator
 
 
 class ConvertSpreadsheetData(Injector):
@@ -21,7 +21,7 @@ class ConvertSpreadsheetData(Injector):
     geocoder = geocoding.GeoCodingProcessor
     error_collector = error_collector.ErrorCollector
     validator = composite_validator.CompositeValidator
-    validators = [RequiredFieldsValidator()]
+    validators = [RequiredFieldsValidator(), CategoriesValidator()]
     writer = csv.CSVWriter
 
 

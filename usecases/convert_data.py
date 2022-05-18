@@ -11,6 +11,7 @@ from config.settings import Settings
 from repositories.csv import CSVWriter
 from services.geocoding import GeoCodingProcessor
 from services.google_sheets import GoogleSheetsReader
+from services.translation import CityTranslator
 from validation.composite_validator import CompositeValidator
 from validation.error_collector import ErrorCollector
 
@@ -33,6 +34,7 @@ class ConvertSpreadsheetData:
     reader: GoogleSheetsReader
     adapter: SpreadsheetAdapter
     geocoder: GeoCodingProcessor
+    translator: CityTranslator
     error_collector: ErrorCollector
     validator: CompositeValidator
     writer: CSVWriter
@@ -45,6 +47,7 @@ class ConvertSpreadsheetData:
             self.reader.fetch,
             bind_ioresult(self.adapter.transform),
             self.geocoder.enhance,
+            bind_ioresult(self.translator.translate),
             bind_ioresult(self.validator.validate),
             self.writer.write
         )

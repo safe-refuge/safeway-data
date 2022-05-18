@@ -5,11 +5,11 @@ from implemented import ConvertSpreadsheetData
 
 HEADERS = ['Name', 'City', 'Address', 'Latitude', 'Longitude', 'Category', 'Organizations', 'Description', 'Phone',
          'Website', 'E-mail', 'Opening hours/days']
-SAMPLE_ROW = ['The Ukrainian House', 'Warszawa', 'ul. Zamenhofa 1, 00-153', '52,24734033', '20,9964833', 'General',
+SAMPLE_ROW = ['The Ukrainian House', 'Warszawa', 'ul. Zamenhofa 1, 00-153', '52,24734033', '20,9964833', 'Accommodation',
       'Fundacja “Nasz Wybór”', 'Crisis support center', '(+48) 727 805 764 ', 'https://ukrainskidom.pl/',
       'biuro@ukrainskidom.pl',
       'Monday:        09:00–19:00\nTuesday:       09:00–19:00\nWednesday:       09:00–19:00\nThursday:       09:00–19:00\nFriday:       09:00–19:00\nSaturday:        09:00–17:00\nSunday:       Closed\n']
-SAMPLE_ROW2 = ['The Ukrainian House', 'Warszawa', 'ul. Zamenhofa 1, 00-153', '52,24734033', '20,9964833', 'General',
+SAMPLE_ROW2 = ['The Ukrainian House', 'Warszawa', 'ul. Zamenhofa 1, 00-153', '52,24734033', '20,9964833', 'Accommodation',
       'Fundacja “Nasz Wybór”', 'Crisis support center', '(+48) 727 805 764 ', 'https://ukrainskidom.pl/',
       'biuro@ukrainskidom.pl',
       'Monday:        09:00–19:00\nTuesday:       09:00–19:00\nWednesday:       09:00–19:00\nThursday:       09:00–19:00\nFriday:       09:00–19:00\nSaturday:        09:00–17:00\nSunday:       Closed\n']
@@ -43,14 +43,15 @@ def fake_close_file(file):
 
 
 def test_spreadsheet_data_conversion():
-    usecase = ConvertSpreadsheetData(
+    usecase: ConvertSpreadsheetData = ConvertSpreadsheetData(
         make_request=fake_make_request,
         open_file=fake_open_file,
         close_file=fake_close_file).usecase
 
     result = usecase.convert()
     csv = FILE_VALUES[0]
-    expected_row = "The Ukrainian House,Poland,Warszawa,\"ul. Zamenhofa 1, 00-153\",52.24734033,20.9964833,General,Fundacja “Nasz Wybór”,Crisis support center"
+    expected_row = "The Ukrainian House,Poland,Warsaw,\"ul. Zamenhofa 1, 00-153\",52.24734033,20.9964833,Accommodation,Fundacja “Nasz Wybór”,Crisis support center"
 
-    assert len(result) == 2
+    assert len(result) == 1
+    assert len(usecase.error_collector.invalid_points) == 1
     assert expected_row in csv

@@ -22,7 +22,7 @@ def point_of_interest():
     )
 
 
-def test_geocoding(point_of_interest: PointOfInterest):
+def test_translation(point_of_interest: PointOfInterest):
     # TODO: Make this test pass by implementing CityTranslator
     subject = CityTranslator(Settings())
     result = subject.translate([point_of_interest])

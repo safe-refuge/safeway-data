@@ -9,7 +9,7 @@ from models.point_of_interest import PointOfInterest
 
 
 def open_file(path: str) -> TextIO:
-    return open(path, "w")
+    return open(path, "w", encoding='utf-8-sig', newline='')
 
 
 def close_file(file: TextIO):

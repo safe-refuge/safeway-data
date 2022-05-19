@@ -1,6 +1,6 @@
 import re
+import json
 import googlemaps
-
 from dataclasses import dataclass
 from typing import List, Mapping
 from returns.io import impure_safe
@@ -37,9 +37,9 @@ class GeoCodingProcessor:
         coordinates: Mapping[str, Point] = {}
 
         for address in addresses_to_geocode:
-            latLng = gmaps.geocode(address)
-            coordinates.update(address, latLng)
- 
+            geoData = gmaps.geocode(address)[0]["geometry"]["location"]
+            coordinates.update({address: Point(float(geoData["lat"]), float(geoData["lng"]))})
+            
         for entry in entries:
             point = coordinates.get(entry.address)
             if point:

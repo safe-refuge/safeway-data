@@ -26,5 +26,5 @@ def test_geocoding(point_of_interest: PointOfInterest):
     subject = GeoCodingProcessor(Settings())
     result = subject.enhance([point_of_interest])
     enhanced: PointOfInterest = unsafe_perform_io(result).unwrap()[0]
-    assert enhanced.lat == '50.847608'
-    assert enhanced.lng == '16.473205'
+    assert enhanced.lat == 52.2473216
+    assert enhanced.lng == 20.9964703

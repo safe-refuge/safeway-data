@@ -43,8 +43,7 @@ class GeoCodingProcessor:
         coordinates: Mapping[str, Point] = {}
 
         for address in addresses_to_geocode:
-            latLng: Point = make_geocode_request(address, gmaps)
-            coordinates.update({address: latLng})
+            coordinates.update({address: make_geocode_request(address, gmaps)})
             
         for entry in entries:
             point = coordinates.get(entry.address)

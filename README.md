@@ -59,13 +59,9 @@ Saved 272 results into data/output.example.csv
 If you have any questions, contact @littlepea
 
 ## Running tests
-You will need to install pytest 
-```shell
-pip install pytest
-```
 
 ```shell
-❯ pytest
+❯ poetry run pytest
 Test session starts (platform: darwin, Python 3.9.12, pytest 7.1.2, pytest-sugar 0.9.4)
 collecting ... 
  tests/test_spreadsheet_adapter.py ✓                                                                                                                                                                      50% █████     

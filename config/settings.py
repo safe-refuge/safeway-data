@@ -15,5 +15,5 @@ class Settings(BaseSettings):
     output_file: str = "data/output.csv"
 
     class Config:
-        env_file = "config/.env.example"
+        env_file = "config/.env"
         env_file_encoding = "utf-8"

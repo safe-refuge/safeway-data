@@ -24,6 +24,9 @@ class GeoCodingProcessor:
         For entries with missing lat/lng but present address
         we can find lat/lng using a geocoding API.
         """
+        # Injected dependencies
+        settings: Settings
+
         #Create client instance of gmaps
         gmaps = googlemaps.Client(key=self.settings.developer_key)
 

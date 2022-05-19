@@ -59,6 +59,10 @@ Saved 272 results into data/output.example.csv
 If you have any questions, contact @littlepea
 
 ## Running tests
+You will need to install pytest 
+```shell
+pip install pytest
+```
 
 ```shell
 ❯ pytest

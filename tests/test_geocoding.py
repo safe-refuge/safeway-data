@@ -1,10 +1,10 @@
+# coding: utf-8
 import pytest
 from returns.unsafe import unsafe_perform_io
 
 from config.settings import Settings
 from services.geocoding import GeoCodingProcessor
 from models.point_of_interest import PointOfInterest
-
 
 
 @pytest.fixture

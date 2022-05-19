@@ -6,12 +6,18 @@ from typing import List, Mapping
 from returns.io import impure_safe
 from config.settings import Settings
 from models.point_of_interest import PointOfInterest
+
+
+
+
 @dataclass
 class Point:
     lat: str
     lng: str
 
-
+def make_geocode_request(address: str, gmaps) -> Point:
+    geoData = gmaps.geocode(address)[0]["geometry"]["location"]
+    return Point(float(geoData["lat"]), float(geoData["lng"]))
 @dataclass
 class GeoCodingProcessor:
 
@@ -37,8 +43,8 @@ class GeoCodingProcessor:
         coordinates: Mapping[str, Point] = {}
 
         for address in addresses_to_geocode:
-            geoData = gmaps.geocode(address)[0]["geometry"]["location"]
-            coordinates.update({address: Point(float(geoData["lat"]), float(geoData["lng"]))})
+            latLng: Point = make_geocode_request(address, gmaps)
+            coordinates.update({address: latLng})
             
         for entry in entries:
             point = coordinates.get(entry.address)

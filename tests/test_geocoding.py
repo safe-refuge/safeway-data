@@ -22,7 +22,6 @@ def point_of_interest():
 
 
 def test_geocoding(point_of_interest: PointOfInterest):
-    # TODO: Make this test pass by implementing GeoCodingProcessor
     subject = GeoCodingProcessor(Settings())
     result = subject.enhance([point_of_interest])
     enhanced: PointOfInterest = unsafe_perform_io(result).unwrap()[0]

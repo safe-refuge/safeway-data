@@ -36,5 +36,5 @@ def test_geocoding(point_of_interest: PointOfInterest):
 
     result = geocoder.enhance([point_of_interest])
     enhanced: PointOfInterest = unsafe_perform_io(result).unwrap()[0]
-    assert enhanced.lat == 52.2473216
-    assert enhanced.lng == 20.9964703
+    assert enhanced.lat == '52.2473216'
+    assert enhanced.lng == '20.9964703'

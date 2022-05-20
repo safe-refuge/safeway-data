@@ -2,7 +2,7 @@ import re
 import json
 import googlemaps
 from dataclasses import dataclass
-from typing import List, Mapping
+from typing import Callable, List, Mapping
 from returns.io import impure_safe
 from config.settings import Settings
 from models.point_of_interest import PointOfInterest
@@ -25,7 +25,9 @@ class GeoCodingProcessor:
 
     # Injected dependencies
     settings: Settings
-
+    make_geocode_request: Callable = make_geocode_request
+    init_google_maps: Callable = init_google_maps
+    
     @impure_safe
     def enhance(self, entries: List[PointOfInterest]) -> List[PointOfInterest]:
         """
@@ -34,7 +36,7 @@ class GeoCodingProcessor:
         """
 
         #Create client instance of gmaps
-        gmaps = init_google_maps(self.settings.developer_key)
+        gmaps = self.init_google_maps(self.settings.developer_key)
 
         addresses_to_geocode: List[str] = [
             poi.address
@@ -45,7 +47,7 @@ class GeoCodingProcessor:
         coordinates: Mapping[str, Point] = {}
 
         for address in addresses_to_geocode:
-            geoData = make_geocode_request(address, gmaps)[0]["geometry"]["location"]  
+            geoData = self.make_geocode_request(address, gmaps)[0]["geometry"]["location"]  
             coordinates.update({address: Point(float(geoData["lat"]), float(geoData["lng"]))})
             
         for entry in entries:

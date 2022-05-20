@@ -23,10 +23,10 @@ def point_of_interest():
 
 
 def fake_make_geocode_request(address: str, gmaps):
-   return { "lat": "52.2473216", "lng": "20.9964703" }
+   return [{'geometry': {'location':{ "lat": "52.2473216", "lng": "20.9964703" }}}]
 
 
-def fake_init_google_maps():
+def fake_init_google_maps(key):
     return {}
 
 def test_geocoding(point_of_interest: PointOfInterest):

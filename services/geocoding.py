@@ -1,12 +1,13 @@
 import re
-
+import json
+import googlemaps
 from dataclasses import dataclass
-from typing import List, Mapping
-
+from typing import Callable, List, Mapping
 from returns.io import impure_safe
-
 from config.settings import Settings
 from models.point_of_interest import PointOfInterest
+
+
 
 
 @dataclass
@@ -14,19 +15,29 @@ class Point:
     lat: str
     lng: str
 
+def make_geocode_request(address: str, gmaps):
+   return gmaps.geocode(address)
 
+def init_google_maps(key):
+    return googlemaps.Client(key=key)
 @dataclass
 class GeoCodingProcessor:
 
     # Injected dependencies
     settings: Settings
-
+    make_geocode_request: Callable = make_geocode_request
+    init_google_maps: Callable = init_google_maps
+    
     @impure_safe
     def enhance(self, entries: List[PointOfInterest]) -> List[PointOfInterest]:
         """
         For entries with missing lat/lng but present address
         we can find lat/lng using a geocoding API.
         """
+
+        #Create client instance of gmaps
+        gmaps = self.init_google_maps(self.settings.developer_key)
+
         addresses_to_geocode: List[str] = [
             poi.address
             for poi in entries
@@ -34,8 +45,14 @@ class GeoCodingProcessor:
         ]
 
         coordinates: Mapping[str, Point] = {}
-        # TODO: use a geocoding API to fill the coordinates for each address
 
+        for address in addresses_to_geocode:
+            geoData = self.make_geocode_request(address, gmaps)[0]["geometry"]["location"]
+            if geoData is not None:
+                coordinates.update({address: Point(geoData["lat"], geoData["lng"])})
+            else:
+                raise ValueError(f'Could not find coordinates for {address}')
+            
         for entry in entries:
             point = coordinates.get(entry.address)
             if point:

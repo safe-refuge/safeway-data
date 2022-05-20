@@ -47,8 +47,11 @@ class GeoCodingProcessor:
         coordinates: Mapping[str, Point] = {}
 
         for address in addresses_to_geocode:
-            geoData = self.make_geocode_request(address, gmaps)[0]["geometry"]["location"]  
-            coordinates.update({address: Point(geoData["lat"], geoData["lng"])})
+            geoData = self.make_geocode_request(address, gmaps)[0]["geometry"]["location"]
+            if geoData is not None:
+                coordinates.update({address: Point(geoData["lat"], geoData["lng"])})
+            else:
+                raise ValueError(f'Could not find coordinates for {address}')
             
         for entry in entries:
             point = coordinates.get(entry.address)

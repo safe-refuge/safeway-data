@@ -70,3 +70,20 @@ collecting ...
 Results (0.34s):
        2 passed
 ```
+
+## Running web scrapers
+
+All the [Scrapy](https://docs.scrapy.org/) spiders are in the `scraping` directory.
+
+You can run a specific spider by supplying the name and output file:
+
+```shell
+poetry run scrapy crawl dopomoga -o data/dopomoga.csv
+```
+
+## Creating new spiders
+
+You can place your new spiders into `scraping/spiders` directory and implement according 
+to the [Scrapy tutorial](https://docs.scrapy.org/en/latest/intro/tutorial.html).
+
+It's highly recommended to add unit tests for your spider's `parse` method.

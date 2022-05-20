@@ -15,7 +15,7 @@ from validation import error_collector, composite_validator, RequiredFieldsValid
 
 class ConvertSpreadsheetData(Injector):
     usecase = convert_data.ConvertSpreadsheetData
-    settings = settings.Settings(_env_file="config/.env.example")
+    settings = settings.Settings(_env_file="config/.env")
     reader = google_sheets.GoogleSheetsReader
     adapter = spreadsheet_adapter.SpreadsheetAdapter
     geocoder = geocoding.GeoCodingProcessor

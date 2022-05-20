@@ -15,9 +15,11 @@ class Point:
     lat: str
     lng: str
 
-def make_geocode_request(address: str, gmaps) -> Point:
-    geoData = gmaps.geocode(address)[0]["geometry"]["location"]
-    return Point(float(geoData["lat"]), float(geoData["lng"]))
+def make_geocode_request(address: str, gmaps):
+   return gmaps.geocode(address)
+
+def init_google_maps(key):
+    return googlemaps.Client(key=key)
 @dataclass
 class GeoCodingProcessor:
 
@@ -32,7 +34,7 @@ class GeoCodingProcessor:
         """
 
         #Create client instance of gmaps
-        gmaps = googlemaps.Client(key=self.settings.developer_key)
+        gmaps = init_google_maps(self.settings.developer_key)
 
         addresses_to_geocode: List[str] = [
             poi.address
@@ -43,7 +45,8 @@ class GeoCodingProcessor:
         coordinates: Mapping[str, Point] = {}
 
         for address in addresses_to_geocode:
-            coordinates.update({address: make_geocode_request(address, gmaps)})
+            geoData = make_geocode_request(address, gmaps)[0]["geometry"]["location"]  
+            coordinates.update({address: Point(float(geoData["lat"]), float(geoData["lng"]))})
             
         for entry in entries:
             point = coordinates.get(entry.address)

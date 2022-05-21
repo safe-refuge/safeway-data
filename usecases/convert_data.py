@@ -39,11 +39,11 @@ class ConvertSpreadsheetData:
     validator: CompositeValidator
     writer: CSVWriter
 
-    def convert(self):
+    def convert_spreadsheet(self, spreadsheet_id: str = None):
         self.error_collector.clear()
 
         result = flow(
-            self.settings.spreadsheet_id,
+            spreadsheet_id or self.settings.spreadsheet_id,
             self.reader.fetch,
             bind_ioresult(self.adapter.transform),
             self.geocoder.enhance,

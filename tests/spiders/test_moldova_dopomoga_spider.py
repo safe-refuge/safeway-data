@@ -5,7 +5,7 @@ from scrapy import Spider
 
 from models.point_of_interest import PointOfInterest
 from scraping.spiders.moldova_dopomoga import DopomogaSpider, parse_details
-from scraping.tests.utils import parse_betamax_response
+from tests.utils import parse_betamax_response
 
 
 TEST_DATA = [

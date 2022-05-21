@@ -18,7 +18,7 @@ def main(dry_run: Optional[bool] = False):
         overrides["writer"] = DummyWriter
 
     component = implemented.ConvertSpreadsheetData(**overrides)
-    results: List[PointOfInterest] = component.usecase.convert()
+    results: List[PointOfInterest] = component.usecase.convert_spreadsheet(settings.spreadsheet_id)
 
     typer.echo(f"Saved {len(results)} results into {settings.output_file}")
 

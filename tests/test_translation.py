@@ -52,26 +52,25 @@ def stub_fetch_translated_text(settings, text: List[str]) -> List[str]:
     return [mapping.get(t) for t in text]
 
 
-def test_translation(point_of_interest: PointOfInterest):
-    subject = CityTranslator(Settings(), stub_fetch_translated_text)
-    result = subject.translate([point_of_interest])
-    enhanced: PointOfInterest = unsafe_perform_io(result).unwrap()[0]
-    assert enhanced.city == "Warsaw"
+class TestCityTranslator:
+    def test_translation(self, point_of_interest: PointOfInterest):
+        subject = CityTranslator(Settings(), stub_fetch_translated_text)
+        result = subject.translate([point_of_interest])
+        enhanced: PointOfInterest = unsafe_perform_io(result).unwrap()[0]
+        assert enhanced.city == "Warsaw"
 
+    def test_translation_with_english(self, poi_with_city_in_english: PointOfInterest):
+        subject = CityTranslator(Settings(), stub_fetch_translated_text)
+        result = subject.translate([poi_with_city_in_english])
+        enhanced: PointOfInterest = unsafe_perform_io(result).unwrap()[0]
+        assert enhanced.city == 'Neculaieuca Kindergarten'
 
-def test_translation_with_english(poi_with_city_in_english: PointOfInterest):
-    subject = CityTranslator(Settings(), stub_fetch_translated_text)
-    result = subject.translate([poi_with_city_in_english])
-    enhanced: PointOfInterest = unsafe_perform_io(result).unwrap()[0]
-    assert enhanced.city == 'Neculaieuca Kindergarten'
-
-
-def test_translations(point_of_interests: List[PointOfInterest]):
-    subject = CityTranslator(Settings(), stub_fetch_translated_text)
-    result = subject.translate(point_of_interests)
-    enhanced: List[PointOfInterest] = unsafe_perform_io(result).unwrap()
-    assert enhanced[0].city == 'Mlada Boleslav'
-    assert enhanced[1].city == 'Warsaw'
+    def test_translations(self, point_of_interests: List[PointOfInterest]):
+        subject = CityTranslator(Settings(), stub_fetch_translated_text)
+        result = subject.translate(point_of_interests)
+        enhanced: List[PointOfInterest] = unsafe_perform_io(result).unwrap()
+        assert enhanced[0].city == 'Mlada Boleslav'
+        assert enhanced[1].city == 'Warsaw'
 
 
 def stub_build_request(service, multiple_texts: List[str]) -> HttpRequest:

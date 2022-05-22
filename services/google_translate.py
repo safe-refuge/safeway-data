@@ -38,7 +38,6 @@ class BatchRequestsBuilder:
             self.current_index += self.batch_size
             end_index = self.current_index
             return self.build_request(self.service, self.data[start_index:end_index])
-
         else:
             raise StopIteration
 
@@ -60,7 +59,6 @@ class GoogleTranslateReader:
 
     @staticmethod
     def process_response(response: List[dict]) -> List[str]:
-
         translations = [row['translations'] for row in response]
         flatted = [item for sublist in translations for item in sublist]
         return [translation['translatedText'] for translation in flatted]

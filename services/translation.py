@@ -30,10 +30,8 @@ class CityTranslator:
         cities_from_name_map: Mapping[str, str] = self._get_english_exist_mapping(cities_from_names)
         cities_to_translate: Set[str] = {poi.city for poi in entries if not self._has_english_name(poi.city)}
 
-        translations: Mapping[str, str] = {}
-        # TODO: use a translation API to fill the English translations for each city
         translated_text = self.fetch_translated_text(self.settings, list(cities_to_translate))
-        translations = dict(zip(cities_to_translate, translated_text))
+        translations: Mapping[str, str] = dict(zip(cities_to_translate, translated_text))
 
         for entry in entries:
             original_city = entry.city
@@ -43,10 +41,12 @@ class CityTranslator:
 
         return entries
 
-    def _has_english_name(self, name: str) -> bool:
+    @staticmethod
+    def _has_english_name(name: str) -> bool:
         return '/' in name
 
-    def _get_english_exist_mapping(self, names: List[str]) -> Mapping[str, str]:
+    @staticmethod
+    def _get_english_exist_mapping(names: List[str]) -> Mapping[str, str]:
         result = {}
         for name in names:
             org, eng = name.split('/')

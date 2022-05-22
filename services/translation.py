@@ -11,7 +11,7 @@ from services.google_translate import GoogleTranslateReader
 
 def fetch_translated_text(settings: Settings, text: List[str]):
     result = GoogleTranslateReader(settings=settings).translate(text)
-    return unsafe_perform_io(result).unwrap()[0]
+    return unsafe_perform_io(result).unwrap()
 
 
 @dataclass

@@ -9,8 +9,8 @@ from models.point_of_interest import PointOfInterest
 from services.google_translate import GoogleTranslateReader
 
 
-def fetch_translated_text(text: List[str]):
-    result = GoogleTranslateReader(settings=Settings).translate(text)
+def fetch_translated_text(settings: Settings, text: List[str]):
+    result = GoogleTranslateReader(settings=settings).translate(text)
     return unsafe_perform_io(result).unwrap()[0]
 
 
@@ -32,7 +32,7 @@ class CityTranslator:
 
         translations: Mapping[str, str] = {}
         # TODO: use a translation API to fill the English translations for each city
-        translated_text = self.fetch_translated_text(list(cities_to_translate))
+        translated_text = self.fetch_translated_text(self.settings, list(cities_to_translate))
         translations = dict(zip(cities_to_translate, translated_text))
 
         for entry in entries:

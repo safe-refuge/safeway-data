@@ -125,7 +125,10 @@ class DopomogaSpider(Spider):
                 "city": city,
                 "address": address,
                 "categories": "Accommodation",
-                "description": f"Capacity: {capacity}"
+                "description": f"Capacity: {capacity}",
+                "organizations": "",
+                "lat": "",
+                "lng": "",
             }
 
             yield point

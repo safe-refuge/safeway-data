@@ -1,10 +1,13 @@
+from typing import List, Dict
+
 import pytest
 from returns.unsafe import unsafe_perform_io
 
 from config.settings import Settings
+from services.google_translate import BatchRequestsBuilder, GoogleTranslateReader
 from services.translation import CityTranslator
 from models.point_of_interest import PointOfInterest
-
+from googleapiclient.http import HttpRequest
 
 
 @pytest.fixture
@@ -22,9 +25,84 @@ def point_of_interest():
     )
 
 
-def test_translation(point_of_interest: PointOfInterest):
-    # TODO: Make this test pass by implementing CityTranslator
-    subject = CityTranslator(Settings())
-    result = subject.translate([point_of_interest])
-    enhanced: PointOfInterest = unsafe_perform_io(result).unwrap()[0]
-    assert enhanced.city == "Warsaw"
+@pytest.fixture()
+def point_of_interests():
+    return [PointOfInterest(city='Mladá Boleslav'), PointOfInterest(city='Warszawa')]
+
+
+@pytest.fixture()
+def poi_with_city_in_english():
+    return PointOfInterest(
+        name='Dondușeni',
+        country='',
+        city='satul Neculaieuca (Grădinița Neculaieuca )/ Neculaieuca Kindergarten ',
+        address='or. Dondușeni, str. Ștefan cel Mare, 30 (could not locate on Google maps)',
+        lat='',
+        lng='',
+        categories='Accredited Refugee Center ',
+        organizations='',
+        description='Refugee Center in a retreat center with 60 places '
+    )
+
+
+def stub_fetch_translated_text(settings, text: List[str]) -> List[str]:
+    mapping = {
+        'Warszawa': 'Warsaw',
+        'Mladá Boleslav': 'Mlada Boleslav'}
+    return [mapping.get(t) for t in text]
+
+
+class TestCityTranslator:
+    def test_translation(self, point_of_interest: PointOfInterest):
+        subject = CityTranslator(Settings(), stub_fetch_translated_text)
+        result = subject.translate([point_of_interest])
+        enhanced: PointOfInterest = unsafe_perform_io(result).unwrap()[0]
+        assert enhanced.city == "Warsaw"
+
+    def test_translation_with_english(self, poi_with_city_in_english: PointOfInterest):
+        subject = CityTranslator(Settings(), stub_fetch_translated_text)
+        result = subject.translate([poi_with_city_in_english])
+        enhanced: PointOfInterest = unsafe_perform_io(result).unwrap()[0]
+        assert enhanced.city == 'Neculaieuca Kindergarten'
+
+    def test_translations(self, point_of_interests: List[PointOfInterest]):
+        subject = CityTranslator(Settings(), stub_fetch_translated_text)
+        result = subject.translate(point_of_interests)
+        enhanced: List[PointOfInterest] = unsafe_perform_io(result).unwrap()
+        assert enhanced[0].city == 'Mlada Boleslav'
+        assert enhanced[1].city == 'Warsaw'
+
+
+def stub_build_request(service, multiple_texts: List[str]) -> HttpRequest:
+    return HttpRequest(None, None, None, body=multiple_texts)
+
+
+class TestBatchRequestBuilder:
+
+    def test_run_one_batch(self):
+        data = ['foo', 'bar']
+        requests = BatchRequestsBuilder(data, None, batch_size=4, build_request=stub_build_request)
+        result = [request.body for request in requests]
+        expect = [request.body for request in [stub_build_request(None, ['foo', 'bar'])]]
+        assert result == expect
+
+    def test_run_more_batch(self):
+        data = ['foo', 'bar', 'fizz', 'buzz']
+        requests = BatchRequestsBuilder(data, None, batch_size=2, build_request=stub_build_request)
+        result = [request.body for request in requests]
+        expect = [request.body for request in [stub_build_request(None, ['foo', 'bar'])]] + \
+                 [request.body for request in [stub_build_request(None, ['fizz', 'buzz'])]]
+        assert result == expect
+
+
+class TestGoogleTranslateReader:
+    def test_process_response(self):
+        data = [{'translations': [{'translatedText': 'foo'}, {'translatedText': 'bar'}]}]
+        result = GoogleTranslateReader.process_response(data)
+        assert result == ['foo', 'bar']
+
+    def test_process_responses(self):
+        data = [{'translations': [{'translatedText': 'foo'}, {'translatedText': 'bar'}]},
+                {'translations': [{'translatedText': 'fizz'}, {'translatedText': 'buzz'}]}]
+        result = GoogleTranslateReader.process_response(data)
+        assert result == ['foo', 'bar', 'fizz', 'buzz']

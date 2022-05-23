@@ -16,6 +16,7 @@ pydantic = "^1.9.0"
 pycountry = "^22.3.5"
 # TODO: switch base to upstream once resolved https://github.com/proofit404/dependencies/issues/538
 dependencies = {url = "https://github.com/littlepea/dependencies/archive/refs/heads/release.zip"}
+google-cloud-translate = "^3.7.2"
 googlemaps = "^4.6.0"
 Scrapy = "^2.6.1"
 betamax = "^0.8.1"

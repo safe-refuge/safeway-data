@@ -3,17 +3,16 @@ from typing import Callable, List
 
 from googleapiclient.discovery import build, Resource
 from googleapiclient.http import HttpRequest
-from returns.io import impure_safe
 
 from config.settings import Settings
 
 
-def make_request(request: HttpRequest) -> dict:
+def make_translate_request(request: HttpRequest) -> dict:
     result = request.execute()
     return result
 
 
-def build_request(service: Resource, multiple_texts: List[str]) -> HttpRequest:
+def build_translate_request(service: Resource, multiple_texts: List[str]) -> HttpRequest:
     request: HttpRequest = service.translations().list(target='en', q=multiple_texts)
     return request
 
@@ -26,7 +25,7 @@ class BatchRequestsBuilder:
     data: List[str]
     service: Resource
     batch_size: int = TRANSLATE_QUERY_DATA_BATCH_SIZE
-    build_request: Callable = build_request
+    build_request: Callable = build_translate_request
 
     def __iter__(self):
         self.current_index = 0
@@ -46,10 +45,9 @@ class BatchRequestsBuilder:
 class GoogleTranslateReader:
     # Injected dependencies
     settings: Settings
-    make_request: Callable = make_request
-    build_request: Callable = build_request
+    make_request: Callable = make_translate_request
+    build_request: Callable = build_translate_request
 
-    @impure_safe
     def translate(self, source_text: List[str]) -> List[str]:
         service = build('translate', 'v2', developerKey=self.settings.developer_key)
         requests = BatchRequestsBuilder(source_text, service)

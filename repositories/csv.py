@@ -2,8 +2,6 @@ import csv
 from dataclasses import dataclass
 from typing import List, Callable, TextIO
 
-from returns.io import impure_safe
-
 from config.settings import Settings
 from models.point_of_interest import PointOfInterest
 
@@ -29,7 +27,6 @@ class CSVRepository:
     open_read_only_file: Callable = open_read_only_file
     close_file: Callable = close_file
 
-    @impure_safe
     def write(self, entries: List[PointOfInterest]) -> List[PointOfInterest]:
         fieldnames = list(PointOfInterest.schema()["properties"].keys())
         file = self.open_file(self.settings.output_file)
@@ -43,9 +40,7 @@ class CSVRepository:
 
         return entries
 
-    @impure_safe
     def read(self, input_file: str) -> List[PointOfInterest]:
-        fieldnames = list(PointOfInterest.schema()["properties"].keys())
         file = self.open_read_only_file(input_file)
 
         reader: csv.DictReader = csv.DictReader(file)

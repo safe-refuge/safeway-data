@@ -20,7 +20,7 @@ def main(
 
     typer.echo(f"Loading records from {source} {input_file or spreadsheet_id}")
 
-    overrides = {"settings": settings}
+    overrides = {"settings": settings, "log": typer.echo}
     if dry_run:
         overrides["writer"] = DummyWriter
 

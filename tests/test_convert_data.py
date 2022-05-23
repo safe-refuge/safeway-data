@@ -1,4 +1,5 @@
 from io import StringIO
+from typing import List
 
 from implemented import ConvertSpreadsheetData
 
@@ -60,17 +61,25 @@ def fake_init_google_maps(key):
     return {}
 
 
+def stub_fetch_translated_text(settings, text: List[str]) -> List[str]:
+    mapping = {
+        'Warszawa': 'Warsaw',
+        'Mladá Boleslav': 'Mlada Boleslav'}
+    return [mapping.get(t) for t in text]
+
+
 def test_spreadsheet_data_conversion():
     usecase: ConvertSpreadsheetData = ConvertSpreadsheetData(
         make_request=fake_make_request,
         make_geocode_request=fake_make_geocode_request,
         init_google_maps=fake_init_google_maps,
+        fetch_translated_text=stub_fetch_translated_text,
         open_file=fake_open_file,
         close_file=fake_close_file).usecase
 
     result = usecase.convert_spreadsheet("some-id")
     csv = FILE_VALUES[0]
-    expected_row = "The Ukrainian House,Poland,Warszawa,\"ul. Zamenhofa 1, 00-153\",52.24734033,20.9964833," \
+    expected_row = "The Ukrainian House,Poland,Warsaw,\"ul. Zamenhofa 1, 00-153\",52.24734033,20.9964833," \
                    "Accommodation,Fundacja “Nasz Wybór”,Crisis support center"
 
     # TODO: verify city translation

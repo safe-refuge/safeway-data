@@ -46,37 +46,31 @@ class ConvertSpreadsheetData:
         result = flow(
             spreadsheet_id or self.settings.spreadsheet_id,
             self.spreadsheet_reader.fetch,
-            bind_ioresult(self.adapter.transform),
+            self.adapter.transform,
             self.geocoder.enhance,
-            bind_ioresult(self.translator.translate),
-            bind_ioresult(self.validator.validate),
+            self.translator.translate,
+            self.validator.validate,
             self.csv_repository.write
         )
-        # TODO: deal with failures
-        # result.failure()._inner_value.reason
-        # perform_io = unsafe_perform_io(result)
 
+        # TODO: deal with failures and invalid points
         invalid_points = self.error_collector.invalid_points
 
-        saved_data = unsafe_perform_io(result).unwrap()
+        return result
 
-        return saved_data
-
-    @collect_traces
     def convert_file(self, input_file: str = None):
         self.error_collector.clear()
 
         result = flow(
             input_file,
             self.csv_repository.read,
-            bind_ioresult(self.geocoder.enhance),
-            bind_ioresult(self.translator.translate),
-            bind_ioresult(self.validator.validate),
+            self.geocoder.enhance,
+            self.translator.translate,
+            self.validator.validate,
             self.csv_repository.write
         )
 
+        # TODO: deal with failures and invalid points
         invalid_points = self.error_collector.invalid_points
 
-        saved_data = unsafe_perform_io(result).unwrap()
-
-        return saved_data
+        return result

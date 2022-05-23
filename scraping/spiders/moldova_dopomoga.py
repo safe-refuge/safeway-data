@@ -123,7 +123,7 @@ class DopomogaSpider(Spider):
                 "name": name,
                 "country": "Moldova",
                 "city": city,
-                "address": address,
+                "address": f"Republica Moldova, {city}, {address}",
                 "categories": "Accommodation",
                 "description": f"Capacity: {capacity}",
                 "organizations": "",

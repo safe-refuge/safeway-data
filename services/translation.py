@@ -1,8 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Mapping, Set, Callable, Dict
-
-from returns.io import impure_safe
-from returns.unsafe import unsafe_perform_io
+from typing import List, Mapping, Set, Callable
 
 from config.settings import Settings
 from models.point_of_interest import PointOfInterest
@@ -11,16 +8,16 @@ from services.google_translate import GoogleTranslateReader
 
 def fetch_translated_text(settings: Settings, text: List[str]):
     result = GoogleTranslateReader(settings=settings).translate(text)
-    return unsafe_perform_io(result).unwrap()
+    return result
 
 
 @dataclass
 class CityTranslator:
+
     # Injected dependencies
     settings: Settings
     fetch_translated_text: Callable = fetch_translated_text
 
-    @impure_safe
     def translate(self, entries: List[PointOfInterest]) -> List[PointOfInterest]:
         """
         We need to make sure that all city names are in English

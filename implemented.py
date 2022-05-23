@@ -3,6 +3,7 @@ Implemented use cases with dependencies injected
 
 https://proofit404.github.io/dependencies/
 """
+import typer
 from dependencies import Injector
 
 from adapters import spreadsheet_adapter
@@ -16,14 +17,15 @@ from validation import error_collector, composite_validator, RequiredFieldsValid
 class ConvertSpreadsheetData(Injector):
     usecase = convert_data.ConvertSpreadsheetData
     settings = settings.Settings(_env_file="config/.env.example")
-    reader = google_sheets.GoogleSheetsReader
+    log = print
+    spreadsheet_reader = google_sheets.GoogleSheetsReader
     adapter = spreadsheet_adapter.SpreadsheetAdapter
     geocoder = geocoding.GeoCodingProcessor
     translator = translation.CityTranslator
     error_collector = error_collector.ErrorCollector
     validator = composite_validator.CompositeValidator
     validators = [RequiredFieldsValidator(), CategoriesValidator()]
-    writer = csv.CSVWriter
+    csv_repository = csv.CSVRepository
 
 
 class ConvertSpreadsheetDataLocally(ConvertSpreadsheetData):

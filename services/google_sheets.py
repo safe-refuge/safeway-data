@@ -5,7 +5,6 @@ from typing import Callable, List
 
 from googleapiclient.discovery import build
 from googleapiclient.http import HttpRequest
-from returns.io import impure_safe
 
 from config.settings import Settings
 from models.spreadsheet_row import SpreadsheetRow
@@ -26,7 +25,6 @@ class GoogleSheetsReader:
     settings: Settings
     make_request: Callable = make_request
 
-    @impure_safe
     def fetch(self, spreadsheet_id: str) -> List[SpreadsheetRow]:
         service = build('sheets', 'v4', developerKey=self.settings.developer_key)
         sheet = self.settings.countries[0]  # TODO: loop through all countries

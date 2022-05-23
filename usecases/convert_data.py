@@ -4,11 +4,12 @@ from dataclasses import dataclass
 
 from returns._internal.pipeline.flow import flow
 from returns.pointfree import bind_ioresult
+from returns.primitives.tracing import collect_traces
 from returns.unsafe import unsafe_perform_io
 
 from adapters.spreadsheet_adapter import SpreadsheetAdapter
 from config.settings import Settings
-from repositories.csv import CSVWriter
+from repositories.csv import CSVRepository
 from services.geocoding import GeoCodingProcessor
 from services.google_sheets import GoogleSheetsReader
 from services.translation import CityTranslator
@@ -31,32 +32,45 @@ class ConvertSpreadsheetData:
 
     # Injected dependencies
     settings: Settings
-    reader: GoogleSheetsReader
+    spreadsheet_reader: GoogleSheetsReader
     adapter: SpreadsheetAdapter
     geocoder: GeoCodingProcessor
     translator: CityTranslator
     error_collector: ErrorCollector
     validator: CompositeValidator
-    writer: CSVWriter
+    csv_repository: CSVRepository
 
-    def convert(self):
+    def convert_spreadsheet(self, spreadsheet_id: str = None):
         self.error_collector.clear()
 
         result = flow(
-            self.settings.spreadsheet_id,
-            self.reader.fetch,
-            bind_ioresult(self.adapter.transform),
+            spreadsheet_id or self.settings.spreadsheet_id,
+            self.spreadsheet_reader.fetch,
+            self.adapter.transform,
             self.geocoder.enhance,
-            bind_ioresult(self.translator.translate),
-            bind_ioresult(self.validator.validate),
-            self.writer.write
+            self.translator.translate,
+            self.validator.validate,
+            self.csv_repository.write
         )
-        # TODO: deal with failures
-        # result.failure()._inner_value.reason
-        # perform_io = unsafe_perform_io(result)
 
+        # TODO: deal with failures and invalid points
         invalid_points = self.error_collector.invalid_points
 
-        saved_data = unsafe_perform_io(result).unwrap()
+        return result
 
-        return saved_data
+    def convert_file(self, input_file: str = None):
+        self.error_collector.clear()
+
+        result = flow(
+            input_file,
+            self.csv_repository.read,
+            self.geocoder.enhance,
+            self.translator.translate,
+            self.validator.validate,
+            self.csv_repository.write
+        )
+
+        # TODO: deal with failures and invalid points
+        invalid_points = self.error_collector.invalid_points
+
+        return result

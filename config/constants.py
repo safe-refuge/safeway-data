@@ -1,16 +1,20 @@
 from typing import Set
 
 CATEGORIES: Set[str] = {
-    "Clothes",
     "Accommodation",
-    "Medical",
-    "Border Crossing",
-    "Pharmacy",
-    "Finance",
-    "Information",
-    "Mental help",
-    "Transport",
-    "Food",
+    "Border crossing",
+    "Children",
+    "Clothes",
+    "Disability support",
+    "Social Help",
     "Electronics",
-    "Children"
+    "Finance",
+    "Food",
+    "Information",
+    "Medical",
+    "Mental help",
+    "Any Help",
+    "Pets",
+    "Pharmacy",
+    "Transport",
 }

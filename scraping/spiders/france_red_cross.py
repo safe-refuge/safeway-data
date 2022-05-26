@@ -11,7 +11,7 @@ CATEGORIES = {
     'domicile': 'Accommodation',
     'enfants & familles': 'Children',
     'personnes handicapees': 'Disability support',
-    "lutte contre l'exclusion": 'Social Help',
+    "lutte contre l'exclusion": 'Social help',
     'sanitaire': 'Medical',
 }
 

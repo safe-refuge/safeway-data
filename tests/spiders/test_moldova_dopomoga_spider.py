@@ -49,7 +49,7 @@ def test_parse_details(details, expected_name, expected_address, city):
 def test_dopomoga_parse(betamax_session):
     spider: Spider = DopomogaSpider()
     url = spider.start_urls[0]
-    results: List[PointOfInterest] = parse_betamax_response(betamax_session, spider, url)
+    results: List[PointOfInterest] = parse_betamax_response(betamax_session, spider.parse, url)
 
     assert results
     for point in results:

@@ -1,4 +1,4 @@
-from typing import Generator, List
+from typing import List
 
 from requests import Session, Response
 from scrapy import Spider
@@ -11,8 +11,12 @@ def parse_betamax_response(session: Session, spider: Spider, url: str) -> List[P
     """
     Loads response for a given URL through Betamax  and parses it with a given spider
     """
-    response: Response = session.get(url)
-    scrapy_response = HtmlResponse(body=response.content, url=url)
+    scrapy_response = get_betamax_response(session, url)
     results = [PointOfInterest(**result) for result in spider.parse(scrapy_response)]
 
     return results
+
+
+def get_betamax_response(session: Session, url: str) -> HtmlResponse:
+    response: Response = session.get(url)
+    return HtmlResponse(body=response.content, url=url)

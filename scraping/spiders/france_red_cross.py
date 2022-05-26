@@ -10,7 +10,9 @@ log = logging.getLogger(__name__)
 CATEGORIES = {
     'domicile': 'Accommodation',
     'enfants & familles': 'Children',
-    'personnes handicapees': 'Medical',
+    'personnes handicapees': 'Disability support',
+    "lutte contre l'exclusion": 'Social Help',
+    'sanitaire': 'Medical',
 }
 
 SERVICES_TO_CATEGORIES = {
@@ -21,10 +23,13 @@ SERVICES_TO_CATEGORIES = {
     'accueil et orientation': 'Accommodation',
     'accueil famille-enfant': 'Children',
     'espace bébé parents': 'Children',
+    'dynamique jeunesse': 'Children',
     'point hygiène': 'Medical',
-    'postes de secours': 'Medical',
+    'postes de secours': 'Any help',
 
 }
+
+DEFAULT_CATEGORY = 'Any Help'
 
 
 class FranceRedCrossSpider(scrapy.Spider):
@@ -97,6 +102,9 @@ def normalize_point_data(point):
         point['categories'] += point['_relevant_services']
         services = ', '.join(point['_relevant_services'])
         point['description'] = f'Services available: {services}'
+
+    if not point['categories']:
+        point['categories'] = [DEFAULT_CATEGORY]
 
     if point.get('_other_services'):
         services = ', '.join(point['_other_services'])

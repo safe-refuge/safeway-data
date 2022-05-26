@@ -27,7 +27,7 @@ def test_parse_points(betamax_session):
         assert point.city
         assert point.address
         assert point.description
-        assert len(point.categories) > 0
+        assert point.categories
 
 
 def test_categories_mapping():

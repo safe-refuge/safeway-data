@@ -90,7 +90,6 @@ def parse_point(block):
 
 def normalize_point_data(point):
     point.update(**{
-        # TODO: this assumes categories are a list (which it isn't yet)
         'categories': [],
         'description': '',
     })
@@ -105,6 +104,8 @@ def normalize_point_data(point):
 
     if not point['categories']:
         point['categories'] = [DEFAULT_CATEGORY]
+
+    point['categories'] = ','.join(point['categories'])
 
     if point.get('_other_services'):
         services = ', '.join(point['_other_services'])

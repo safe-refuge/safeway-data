@@ -14,8 +14,6 @@ def make_places_request(address: str, gmaps: googlemaps.places):
     return gmaps.places_autocomplete(address)
 
 # is there somewhere I can put this method to reuse it throughout the app?
-
-
 def init_google_maps(key):
     return googlemaps.Client(key=key)
 

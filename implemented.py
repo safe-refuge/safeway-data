@@ -8,7 +8,7 @@ from dependencies import Injector
 
 from adapters import spreadsheet_adapter
 from usecases import convert_data
-from services import google_sheets, geocoding, translation
+from services import google_sheets, geocoding, translation, address_sanitizer
 from repositories import csv
 from config import settings
 from validation import error_collector, composite_validator, RequiredFieldsValidator, CategoriesValidator
@@ -20,6 +20,7 @@ class ConvertSpreadsheetData(Injector):
     log = print
     spreadsheet_reader = google_sheets.GoogleSheetsReader
     adapter = spreadsheet_adapter.SpreadsheetAdapter
+    address_sanitizer = address_sanitizer.AddressSanitizer
     geocoder = geocoding.GeoCodingProcessor
     translator = translation.CityTranslator
     error_collector = error_collector.ErrorCollector

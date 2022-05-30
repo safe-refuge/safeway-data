@@ -160,4 +160,5 @@ cython_debug/
 .idea/
 
 # Other
-output.csv
+*.csv
+service_account.json

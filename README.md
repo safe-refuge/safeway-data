@@ -53,7 +53,7 @@ Run the actual conversion script:
 ```shell
 ❯ poetry run python main.py          
 Loading records from spreadsheet 1Y1QLbJ6gvPvz8UI-TTIUUWv5bDpSNeUVY3h-7OV6tj0
-Saved 272 results into data/output.example.csv
+Saved 272 results into data/output.csv
 ```
 
 If you have any questions, contact @littlepea

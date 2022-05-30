@@ -24,9 +24,7 @@ SERVICES_TO_CATEGORIES = {
     'accueil famille-enfant': 'Children',
     'espace bébé parents': 'Children',
     'dynamique jeunesse': 'Children',
-    'point hygiène': 'Medical',
     'postes de secours': 'Any help',
-
 }
 
 DEFAULT_CATEGORY = 'Any Help'
@@ -84,6 +82,12 @@ def parse_point(block):
         point.update(**parse_point_keys(paragraph))
 
     normalize_point_data(point)
+
+    point.update({
+        "organizations": "",
+        "lat": "",
+        "lng": "",
+    })
 
     return point
 
@@ -157,9 +161,11 @@ def parse_default_key(paragraph, key):
 
 def parse_address(paragraph, _):
     values = paragraph.css('span.value::text').getall()
+    city = despacify(values[-1].split('\n')[-1]).title()
+    address = despacify(' '.join(values[:-1])).title()
     return {
-        'city': despacify(values[-1].split('\n')[-1]).title(),
-        'address': despacify(' '.join(values[:-1])).title(),
+        'city': city,
+        'address': f'{address}, {city}',
     }
 
 

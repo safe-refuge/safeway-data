@@ -3,6 +3,10 @@ from typing import List
 import scrapy
 import json
 
+from joblib import Memory
+
+memory = Memory(location='cache/poland_rjps')
+
 DATA_PATH = 'data/spiders/rips/'
 CATEGORY_MAPPING = {
     'Seniors': {'category': 'Medical', 'ids_file': f'{DATA_PATH}seniors.json'},
@@ -16,9 +20,16 @@ class QuotesSpider(scrapy.Spider):
     name = "poland_rjps"
 
     def start_requests(self):
+
         for key, value in CATEGORY_MAPPING.items():
+            category = value['category']
+
+            @memory.cache
+            def cached_request_with_url(url: str):
+                return scrapy.Request(url=url, callback=self.parse, cb_kwargs={'category': category})
+
             for url in self._build_urls(value['ids_file']):
-                yield scrapy.Request(url=url, callback=self.parse, cb_kwargs={'category': value['category']})
+                yield cached_request_with_url(url=url)
 
     def _build_urls(self, file_name: str) -> List[str]:
         ids = open_json_file(file_name)

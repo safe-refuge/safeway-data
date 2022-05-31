@@ -4,11 +4,11 @@ import logging
 import scrapy
 import hjson
 
+from config.constants import DEFAULT_CATEGORY
+
 
 log = logging.getLogger(__name__)
 
-
-DEFAULT_CATEGORY = 'Any Help'
 
 CATEGORIES = {
     'help_gar': 'Accommodation',
@@ -54,6 +54,10 @@ class CanadaImmigrationServicesSpider(scrapy.Spider):
         json_str, = re.search(regexp, response.text).groups()
 
         for point in hjson.loads(json_str):
+            if point.get('Services', {}).get('Help_gar') != 'yes':
+                log.debug('Skippint point %s', point['Type']['en'])
+                continue
+
             relevant_categories, other_categories = build_categories(point)
             description = build_description(point, other_categories)
             yield {
@@ -74,7 +78,7 @@ def build_categories(point):
     relevant = []
     other = []
     for name, available in point['Services'].items():
-        if not available == 'yes':
+        if available != 'yes':
             continue
         cat = CATEGORIES.get(name)
         if cat:

@@ -10,6 +10,7 @@ from returns.unsafe import unsafe_perform_io
 from adapters.spreadsheet_adapter import SpreadsheetAdapter
 from config.settings import Settings
 from repositories.csv import CSVRepository
+from services.address_sanitizer import AddressSanitizer
 from services.geocoding import GeoCodingProcessor
 from services.google_sheets import GoogleSheetsReader
 from services.translation import CityTranslator
@@ -34,6 +35,7 @@ class ConvertSpreadsheetData:
     settings: Settings
     spreadsheet_reader: GoogleSheetsReader
     adapter: SpreadsheetAdapter
+    address_sanitizer: AddressSanitizer    
     geocoder: GeoCodingProcessor
     translator: CityTranslator
     error_collector: ErrorCollector
@@ -47,6 +49,7 @@ class ConvertSpreadsheetData:
             spreadsheet_id or self.settings.spreadsheet_id,
             self.spreadsheet_reader.fetch,
             self.adapter.transform,
+            self.address_sanitizer.sanitize,
             self.geocoder.enhance,
             self.translator.translate,
             self.validator.validate,
@@ -64,6 +67,7 @@ class ConvertSpreadsheetData:
         result = flow(
             input_file,
             self.csv_repository.read,
+            self.address_sanitizer.sanitize,
             self.geocoder.enhance,
             self.translator.translate,
             self.validator.validate,

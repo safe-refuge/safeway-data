@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     cells_range: str = Field(DEFAULT_RANGE, env="CELLS_RANGE")
     countries: List[str] = ["ALL"]
     output_file: str = "data/output.csv"
+    sanitize_address: bool = Field(False, env="SANITIZE_ADDRESS")
 
     class Config:
         env_file = "config/.env"

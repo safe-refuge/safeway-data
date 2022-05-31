@@ -87,3 +87,38 @@ You can place your new spiders into `scraping/spiders` directory and implement a
 to the [Scrapy tutorial](https://docs.scrapy.org/en/latest/intro/tutorial.html).
 
 It's highly recommended to add unit tests for your spider's `parse` method.
+
+## Using VS Code
+
+VS Code does not immediately recognize the virtual environment location
+
+to make it work (and so imports are properly recognized)
+
+click Run => add configuration  and select Python from the list
+
+this will add a configuration launch.json
+
+you will need to add one line to this configuration
+
+```
+"env": {"PYTHONPATH": "${workspaceRoot}"}
+```
+
+it should look something like this
+
+```
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "env": {"PYTHONPATH": "${workspaceRoot}"},
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}
+```

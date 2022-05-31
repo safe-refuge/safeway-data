@@ -38,9 +38,16 @@ class QuotesSpider(scrapy.Spider):
         return [f'{DETAIL_BASE_URL}={value["id"]}' for value in ids]
 
     def parse(self, response, category: str):
-        import pdb;
-        pdb.set_trace()
-        raise NotImplemented
+        return {
+            'name': self._get_name(response)
+        }
+
+    def _get_name(self, response):
+        raw = response.css('h3.nazwa a::text').get()
+        return self._clean_spaces(raw)
+
+    def _clean_spaces(self, data):
+        return data.strip()
 
 
 def open_json_file(file_name: str) -> dict:

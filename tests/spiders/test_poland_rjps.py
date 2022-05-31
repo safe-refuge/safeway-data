@@ -205,3 +205,20 @@ class TestQuotesSpider:
         address = QuotesSpider().parse(normal_place, category='test').get('address')
 
         assert address == '16-060 Zabłudów ul. Rynek 8'
+
+    def test_parse_email(self, normal_place):
+        description = QuotesSpider().parse(normal_place, category='test').get('description')
+        assert 'biuro@mops-zabludow.pl' in description
+
+    def test_parse_phone(self, normal_place):
+        description = QuotesSpider().parse(normal_place, category='test').get('description')
+        assert 'tel. 85 7188100' in description
+
+    def test_parse_website(self, normal_place):
+        description = QuotesSpider().parse(normal_place, category='test').get('description')
+        assert 'http://bip.mops.um.zabludow.wrotapodlasia.pl' in description
+
+    def test_parse_update_date(self, normal_place):
+        description = QuotesSpider().parse(normal_place, category='test').get('description')
+        assert 'data aktualizacji:  2018-02-05' in description
+

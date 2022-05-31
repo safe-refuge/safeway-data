@@ -40,7 +40,8 @@ class QuotesSpider(scrapy.Spider):
     def parse(self, response, category: str):
         return {
             'name': self._get_name(response),
-            'address': self._get_address(response)
+            'address': self._get_address(response),
+            'description': self._get_description(response),
         }
 
     def _get_name(self, response):
@@ -54,6 +55,23 @@ class QuotesSpider(scrapy.Spider):
         lines = response.css('div > div > div.flex.flex-column.justify-content-center span::text').getall()
         return ''.join(lines)
 
+    def _get_description(self, response):
+        return '\n'.join([self._get_email(response),
+                          self._get_phone(response),
+                          self._get_website(response),
+                          self._get_update_date(response)])
+
+    def _get_email(self, response):
+        return response.css('div[title=Email] > div > div::text').get()
+
+    def _get_phone(self, response):
+        return response.css('div[title=Telefon] > div > span.wrap-anywhere::text').get()
+
+    def _get_website(self, response):
+        return response.css('div[title="Strona www"] > div > div::text').get()
+
+    def _get_update_date(self, response):
+        return self._clean_spaces(response.css('div.data-aktualizacji::text').get())
 
 def open_json_file(file_name: str) -> dict:
     with open(file_name, 'r') as f:

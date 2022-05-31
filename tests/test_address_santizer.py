@@ -1,7 +1,7 @@
 import pytest
 
 from returns.unsafe import unsafe_perform_io
-from config import settings
+from config.settings import Settings
 from services.address_sanitizer import AddressSanitizer
 from models.point_of_interest import PointOfInterest
 from implemented import ConvertSpreadsheetData
@@ -42,3 +42,13 @@ def test_address_sanitizer(point_of_interest: PointOfInterest):
     result = addressSanitizer.sanitize([point_of_interest])
     enhanced: PointOfInterest = result[0]
     assert enhanced.address == 'Ludwika Zamenhofa 1, 00-153 Warsaw, Poland'
+
+#Test with IO
+
+# def test_address_sanitizer(point_of_interest: PointOfInterest):
+   
+#     addressSanitizer = AddressSanitizer(Settings(), print)
+#     addressSanitizer.settings.sanitize_address = True
+#     result = addressSanitizer.sanitize([point_of_interest])
+#     enhanced: PointOfInterest = result[0]
+#     assert enhanced.address == 'Ludwika Zamenhofa 1, 00-153 Warsaw, Poland'

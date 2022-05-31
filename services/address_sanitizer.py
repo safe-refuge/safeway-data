@@ -47,7 +47,7 @@ class AddressSanitizer:
                 reason = str(e)
 
             santizedAddress = response[0]['description'] if response else None
-            print(santizedAddress)
+            
             if santizedAddress:
                 if santizedAddress != entry.address:
                     self.log(

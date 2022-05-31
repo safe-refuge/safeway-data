@@ -1,11 +1,7 @@
 from dataclasses import dataclass
-from multiprocessing.connection import Client
-from typing import Callable, List, Mapping, Set
-
+from typing import Callable, List
 import googlemaps
-
 import googlemaps.places
-
 from config.settings import Settings
 from models.point_of_interest import PointOfInterest
 

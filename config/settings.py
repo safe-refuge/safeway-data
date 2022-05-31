@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     cells_range: str = Field(DEFAULT_RANGE, env="CELLS_RANGE")
     countries: List[str] = ["ALL"]
     output_file: str = "data/output.csv"
+    spider_data_path: str = 'data/spiders'
 
     class Config:
         env_file = "config/.env"

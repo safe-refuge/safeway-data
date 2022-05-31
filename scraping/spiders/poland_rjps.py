@@ -4,10 +4,12 @@ import scrapy
 import json
 
 from joblib import Memory
+from config.settings import Settings
 
 memory = Memory(location='cache/poland_rjps')
+settings = Settings()
+DATA_PATH = f'{settings.spider_data_path}/rips/'
 
-DATA_PATH = 'data/spiders/rips/'
 CATEGORY_MAPPING = {
     'Seniors': {'category': 'Medical', 'ids_file': f'{DATA_PATH}seniors.json'},
     'Family': {'category': 'Children', 'ids_file': f'{DATA_PATH}family.json'}

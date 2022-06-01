@@ -64,16 +64,16 @@ class QuotesSpider(scrapy.Spider):
         return '\n'.join(map(self._clean_spaces, rows))
 
     def _get_email(self, response):
-        return response.css('div[title=Email] > div > div::text').get()
+        return response.css('div[title=Email] > div > div::text').get() or ''
 
     def _get_phone(self, response):
-        return response.css('div[title=Telefon] > div > span.wrap-anywhere::text').get()
+        return response.css('div[title=Telefon] > div > span.wrap-anywhere::text').get() or ''
 
     def _get_website(self, response):
-        return response.css('div[title="Strona www"] > div > div::text').get()
+        return response.css('div[title="Strona www"] > div > div::text').get() or ''
 
     def _get_update_date(self, response):
-        return self._clean_spaces(response.css('body > div > div > div > div.data-aktualizacji::text').get())
+        return self._clean_spaces(response.css('body > div > div > div > div.data-aktualizacji::text').get()) or ''
 
 def open_json_file(file_name: str) -> dict:
     with open(file_name, 'r') as f:

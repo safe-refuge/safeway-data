@@ -10,10 +10,12 @@ memory = Memory(location='cache/poland_rjps')
 settings = Settings()
 DATA_PATH = f'{settings.spider_data_path}/rips'
 COUNTRY_NAME = 'Poland'
+DEFAULT_CATEGORY = "Any Help"
 
 CATEGORY_MAPPING = {
     'Seniors': {'category': 'Medical', 'ids_file': f'{DATA_PATH}/seniors.json'},
-    'Family': {'category': 'Children', 'ids_file': f'{DATA_PATH}/family.json'}
+    'Family': {'category': 'Children', 'ids_file': f'{DATA_PATH}/family.json'},
+    'People with disabilities': {'category': 'Disability support', 'ids_file': f'{DATA_PATH}/people_with_disabilities.json'},
 }
 
 DETAIL_BASE_URL = 'https://rjps.mpips.gov.pl/RJPS/WJ/wyszukiwanie/pobierzDaneJednostki.do?jednostkiIds'
@@ -46,8 +48,8 @@ class QuotesSpider(scrapy.Spider):
             'address': self._get_address(response),
             'lat': '',
             'lng': '',
-            'category': category,
-            'organizations':'',
+            'category': category or DEFAULT_CATEGORY,
+            'organizations': '',
             'description': self._get_description(response)
         }
 

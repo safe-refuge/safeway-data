@@ -8,11 +8,11 @@ from config.settings import Settings
 
 memory = Memory(location='cache/poland_rjps')
 settings = Settings()
-DATA_PATH = f'{settings.spider_data_path}/rips/'
+DATA_PATH = f'{settings.spider_data_path}/rips'
 
 CATEGORY_MAPPING = {
-    'Seniors': {'category': 'Medical', 'ids_file': f'{DATA_PATH}seniors.json'},
-    'Family': {'category': 'Children', 'ids_file': f'{DATA_PATH}family.json'}
+    'Seniors': {'category': 'Medical', 'ids_file': f'{DATA_PATH}/seniors.json'},
+    'Family': {'category': 'Children', 'ids_file': f'{DATA_PATH}/family.json'}
 }
 
 DETAIL_BASE_URL = 'https://rjps.mpips.gov.pl/RJPS/WJ/wyszukiwanie/pobierzDaneJednostki.do?jednostkiIds'
@@ -41,7 +41,7 @@ class QuotesSpider(scrapy.Spider):
         return {
             'name': self._get_name(response),
             'address': self._get_address(response),
-            'description': self._get_description(response),
+            'description': self._get_description(response)
         }
 
     def _get_name(self, response):
@@ -56,10 +56,12 @@ class QuotesSpider(scrapy.Spider):
         return ''.join(lines)
 
     def _get_description(self, response):
-        return '\n'.join([self._get_email(response),
-                          self._get_phone(response),
-                          self._get_website(response),
-                          self._get_update_date(response)])
+        rows = [self._get_email(response),
+                self._get_phone(response),
+                self._get_website(response),
+                self._get_update_date(response)]
+
+        return '\n'.join(map(self._clean_spaces, rows))
 
     def _get_email(self, response):
         return response.css('div[title=Email] > div > div::text').get()
@@ -71,7 +73,7 @@ class QuotesSpider(scrapy.Spider):
         return response.css('div[title="Strona www"] > div > div::text').get()
 
     def _get_update_date(self, response):
-        return self._clean_spaces(response.css('div.data-aktualizacji::text').get())
+        return self._clean_spaces(response.css('body > div > div > div > div.data-aktualizacji::text').get())
 
 def open_json_file(file_name: str) -> dict:
     with open(file_name, 'r') as f:

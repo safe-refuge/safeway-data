@@ -50,14 +50,11 @@ class CanadaImmigrationServicesSpider(scrapy.Spider):
     ]
 
     def parse(self, response, **kwargs):
-        regexp = re.compile(r'\*\/\s*var ServicesData = (\[.*\]);', re.S)
-        json_str, = re.search(regexp, response.text).groups()
-
-        for point in hjson.loads(json_str):
+        points = parse_response(response)
+        for point in points:
             if point.get('Services', {}).get('Help_gar') != 'yes':
                 log.debug('Skippint point %s', point['Type']['en'])
                 continue
-
             relevant_categories, other_categories = build_categories(point)
             description = build_description(point, other_categories)
             yield {
@@ -72,6 +69,12 @@ class CanadaImmigrationServicesSpider(scrapy.Spider):
                 'lat': point['Coordinates']['Latitude'],
                 'lng': point['Coordinates']['Longitude'],
             }
+
+
+def parse_response(response):
+    regexp = re.compile(r'\*\/\s*var ServicesData = (\[.*\]);', re.S)
+    json_str, = re.search(regexp, response.text).groups()
+    return hjson.loads(json_str)
 
 
 def build_categories(point):

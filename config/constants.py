@@ -1,7 +1,7 @@
 from typing import Set
 
 
-DEFAULT_CATEGORY = 'Any Help'
+DEFAULT_CATEGORY = 'Any help'
 
 CATEGORIES: Set[str] = {
     'Clothes',

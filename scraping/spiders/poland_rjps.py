@@ -9,6 +9,7 @@ from config.settings import Settings
 memory = Memory(location='cache/poland_rjps')
 settings = Settings()
 DATA_PATH = f'{settings.spider_data_path}/rips'
+COUNTRY_NAME = 'Poland'
 
 CATEGORY_MAPPING = {
     'Seniors': {'category': 'Medical', 'ids_file': f'{DATA_PATH}/seniors.json'},
@@ -40,7 +41,13 @@ class QuotesSpider(scrapy.Spider):
     def parse(self, response, category: str):
         return {
             'name': self._get_name(response),
+            'country': COUNTRY_NAME,
+            'city': '',
             'address': self._get_address(response),
+            'lat': '',
+            'lng': '',
+            'category': category,
+            'organizations':'',
             'description': self._get_description(response)
         }
 
@@ -74,6 +81,7 @@ class QuotesSpider(scrapy.Spider):
 
     def _get_update_date(self, response):
         return self._clean_spaces(response.css('body > div > div > div > div.data-aktualizacji::text').get()) or ''
+
 
 def open_json_file(file_name: str) -> dict:
     with open(file_name, 'r') as f:

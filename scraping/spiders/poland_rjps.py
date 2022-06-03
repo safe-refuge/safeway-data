@@ -1,4 +1,5 @@
-from typing import List
+from collections import defaultdict
+from typing import List, Dict
 
 import scrapy
 import json
@@ -15,13 +16,14 @@ DEFAULT_CATEGORY = "Any Help"
 CATEGORY_MAPPING = {
     'Seniors': {'category': 'Medical', 'ids_file': f'{DATA_PATH}/seniors.json'},
     'Family': {'category': 'Children', 'ids_file': f'{DATA_PATH}/family.json'},
-    'People with disabilities': {'category': 'Disability support', 'ids_file': f'{DATA_PATH}/people_with_disabilities.json'},
+    'People with disabilities': {'category': 'Disability support',
+                                 'ids_file': f'{DATA_PATH}/people_with_disabilities.json'},
 }
 
 DETAIL_BASE_URL = 'https://rjps.mpips.gov.pl/RJPS/WJ/wyszukiwanie/pobierzDaneJednostki.do?jednostkiIds'
 
 
-class QuotesSpider(scrapy.Spider):
+class PolandRJPSSpider(scrapy.Spider):
     name = "poland_rjps"
 
     def start_requests(self):
@@ -89,3 +91,19 @@ def open_json_file(file_name: str) -> dict:
     with open(file_name, 'r') as f:
         data = json.load(f)
     return data
+
+
+class CategoryHandler:
+    def __init__(self, data: Dict[str, List[str]]):
+        self.data = data
+        self.mapping = self.get_mapping()
+
+    def get_mapping(self):
+        mapping = defaultdict(set)
+        for category, urls in self.data.items():
+            for url in urls:
+                mapping[url].add(category)
+        return mapping
+
+    def get_categories_by_url(self, url: str) -> str:
+        return ','.join(list(self.mapping[url]))

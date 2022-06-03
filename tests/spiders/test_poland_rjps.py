@@ -61,7 +61,11 @@ class TestPolandRJPSSpider:
 class TestCategoryHandler:
     def get_handler(self, data):
         class StubCategoryHandler(CategoryHandler):
-            pass
+            GET_MAPPING_TIMES = 0
+
+            def get_mapping(self):
+                self.GET_MAPPING_TIMES += 1
+                return super().get_mapping()
 
         return StubCategoryHandler(data)
 
@@ -109,3 +113,10 @@ class TestCategoryHandler:
                             'Children': ['https://foo.com/123']})
         handler = self.get_handler(data)
         assert handler.get_categories_by_url('https://foo.com/123') == 'Medical,Children'
+
+    def test_build_mapping_onece(self):
+        data = {'Medical': ['https://foo.com/123', 'https://foo.com/126']}
+        handler = self.get_handler(data)
+        handler.get_categories_by_url('https://foo.com/123')
+        handler.get_categories_by_url('https://foo.com/123')
+        assert handler.GET_MAPPING_TIMES == 1

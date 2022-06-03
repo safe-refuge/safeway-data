@@ -14,10 +14,10 @@ COUNTRY_NAME = 'Poland'
 DEFAULT_CATEGORY = "Any Help"
 
 CATEGORY_MAPPING = {
-    'Seniors': {'category': 'Medical', 'ids_file': f'{DATA_PATH}/seniors.json'},
-    'Family': {'category': 'Children', 'ids_file': f'{DATA_PATH}/family.json'},
-    'People with disabilities': {'category': 'Disability support',
-                                 'ids_file': f'{DATA_PATH}/people_with_disabilities.json'},
+    'Medical': f'{DATA_PATH}/seniors.json',
+    'Children': f'{DATA_PATH}/family.json',
+    'Disability support': f'{DATA_PATH}/people_with_disabilities.json',
+    # 'Children': f'{DATA_PATH}/children_and_youth.json' TODO: support multiple URL list in handler
 }
 
 DETAIL_BASE_URL = 'https://rjps.mpips.gov.pl/RJPS/WJ/wyszukiwanie/pobierzDaneJednostki.do?jednostkiIds'
@@ -27,15 +27,16 @@ class PolandRJPSSpider(scrapy.Spider):
     name = "poland_rjps"
 
     def start_requests(self):
+        data = {category: self._build_urls(file_name) for category, file_name in CATEGORY_MAPPING.items()}
+        handler = CategoryHandler(data)
 
-        for key, value in CATEGORY_MAPPING.items():
-            category = value['category']
+        for _, file_name in CATEGORY_MAPPING.items():
 
             @memory.cache
             def cached_request_with_url(url: str):
-                return scrapy.Request(url=url, callback=self.parse, cb_kwargs={'category': category})
+                return scrapy.Request(url=url, callback=self.parse, cb_kwargs={'category': handler.get_categories_by_url(url)})
 
-            for url in self._build_urls(value['ids_file']):
+            for url in self._build_urls(file_name):
                 yield cached_request_with_url(url=url)
 
     def _build_urls(self, file_name: str) -> List[str]:

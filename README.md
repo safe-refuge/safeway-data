@@ -68,7 +68,7 @@ Where are two main ways this CLI tool gets used:
 ❯ poetry run python main.py --spreadsheet-id 1Y1QLbJ6gvPvz8UI-TTIUUWv5bDpSNeUVY3h-7OV6tj0
 ```
 
-This will run the [convert_spreadsheet](https://github.com/littlepea/safeway-data/blob/master/usecases/convert_data.py#L45) 
+This will run the [convert_spreadsheet](usecases/convert_data.py#L45) 
 method with the following steps:
 
 * Fetch list of spreadsheet rows from a Google Sheet

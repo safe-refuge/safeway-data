@@ -58,6 +58,46 @@ Saved 272 results into data/output.csv
 
 If you have any questions, contact @littlepea
 
+## Data flow
+
+Where are two main ways this CLI tool gets used:
+
+### 1) Converting data from a Google Sheet to CSV
+
+```shell
+❯ poetry run python main.py --spreadsheet-id 1Y1QLbJ6gvPvz8UI-TTIUUWv5bDpSNeUVY3h-7OV6tj0
+```
+
+This will run the [convert_spreadsheet](https://github.com/littlepea/safeway-data/blob/master/usecases/convert_data.py#L45) 
+method with the following steps:
+
+* Fetch list of spreadsheet rows from a Google Sheet
+* Transform list of spreadsheet rows to list of [Points of Interest](https://github.com/littlepea/safeway-data/blob/master/models/point_of_interest.py)
+* Optionally, sanitize addresses
+* Find missing coordinates by geocoding addresses
+* Translate city names to English
+* Validate the final list of points
+* Save points to a CSV file
+
+### 2) Enhancing CSV data (scraped via spiders)
+
+When we scrape points of interests using spiders (see below) we save results in CSV (as points of interest) 
+and then we need to enhance them similar to step 1 above. 
+
+```shell
+❯ poetry run python main.py --input-file data/france_red_cross.csv
+```
+
+This will run the [convert_file](https://github.com/littlepea/safeway-data/blob/master/usecases/convert_data.py#L78) 
+method with the following steps:
+
+* Fetch list of points of interest from the input CSV file
+* Optionally, sanitize addresses
+* Find missing coordinates by geocoding addresses
+* Translate city names to English
+* Validate the final list of points
+* Save points to a CSV file
+
 ## Running tests
 
 ```shell

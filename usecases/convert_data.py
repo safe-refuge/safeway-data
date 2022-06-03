@@ -47,12 +47,26 @@ class ConvertSpreadsheetData:
 
         result = flow(
             spreadsheet_id or self.settings.spreadsheet_id,
+
+            # Fetch list of spreadsheet rows from a Google Sheet
             self.spreadsheet_reader.fetch,
+
+            # Transform list of spreadsheet rows to list of Points of Interest
             self.adapter.transform,
+
+            # Optionally, sanitize addresses
             self.address_sanitizer.sanitize,
+
+            # Find missing coordinates by geocoding addresses
             self.geocoder.enhance,
+
+            # Translate city names to English
             self.translator.translate,
+
+            # Validate the final list of points
             self.validator.validate,
+
+            # Save points to a CSV file
             self.csv_repository.write
         )
 
@@ -66,11 +80,23 @@ class ConvertSpreadsheetData:
 
         result = flow(
             input_file,
+
+            # Fetch list of points of interest from the input CSV file
             self.csv_repository.read,
+
+            # Optionally, sanitize addresses
             self.address_sanitizer.sanitize,
+
+            # Find missing coordinates by geocoding addresses
             self.geocoder.enhance,
+
+            # Translate city names to English
             self.translator.translate,
+
+            # Validate the final list of points
             self.validator.validate,
+
+            # Save points to a CSV file
             self.csv_repository.write
         )
 

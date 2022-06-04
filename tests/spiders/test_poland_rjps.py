@@ -65,9 +65,9 @@ class TestPolandRJPSSpider:
             def _open_file(self, file_name):
                 mapping = {
                     '/foo.json': [{"id": 2321, "x": 18.59832, "y": 52.55788},
-                                 {"id": 2354, "x": 18.49855, "y": 52.998119}],
+                                  {"id": 2354, "x": 18.49855, "y": 52.998119}],
                     '/bar.json': [{"id": 2333, "x": 18.59832, "y": 52.55788},
-                                 {"id": 2336, "x": 18.49855, "y": 52.998119}]
+                                  {"id": 2336, "x": 18.49855, "y": 52.998119}]
                 }
                 return mapping.get(file_name, [])
 

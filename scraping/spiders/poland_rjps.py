@@ -14,17 +14,15 @@ COUNTRY_NAME = 'Poland'
 DEFAULT_CATEGORY = "Any Help"
 
 CATEGORY_MAPPING = {
-    'Medical': f'{DATA_PATH}/seniors.json',
-    'Children': f'{DATA_PATH}/family.json',
-    'Disability support': f'{DATA_PATH}/people_with_disabilities.json',
-    # 'Children': f'{DATA_PATH}/children_and_youth.json' TODO: support multiple URL list in handler
+    'Medical': [f'{DATA_PATH}/seniors.json'],
+    'Children': [f'{DATA_PATH}/family.json', f'{DATA_PATH}/children_and_youth.json'],
+    'Disability support': [f'{DATA_PATH}/people_with_disabilities.json'],
 }
-
-DETAIL_BASE_URL = 'https://rjps.mpips.gov.pl/RJPS/WJ/wyszukiwanie/pobierzDaneJednostki.do?jednostkiIds'
 
 
 class PolandRJPSSpider(scrapy.Spider):
     name = "poland_rjps"
+    DETAIL_BASE_URL = 'https://rjps.mpips.gov.pl/RJPS/WJ/wyszukiwanie/pobierzDaneJednostki.do?jednostkiIds'
 
     def start_requests(self):
         data = {category: self._build_urls(file_name) for category, file_name in CATEGORY_MAPPING.items()}
@@ -34,14 +32,19 @@ class PolandRJPSSpider(scrapy.Spider):
 
             @memory.cache
             def cached_request_with_url(url: str):
-                return scrapy.Request(url=url, callback=self.parse, cb_kwargs={'category': handler.get_categories_by_url(url)})
+                return scrapy.Request(url=url, callback=self.parse,
+                                      cb_kwargs={'category': handler.get_categories_by_url(url)})
 
             for url in self._build_urls(file_name):
                 yield cached_request_with_url(url=url)
 
-    def _build_urls(self, file_name: str) -> List[str]:
-        ids = open_json_file(file_name)
-        return [f'{DETAIL_BASE_URL}={value["id"]}' for value in ids]
+    def _build_urls(self, file_names: List[str]) -> List[str]:
+        data = [self._open_file(file_name) for file_name in file_names]
+        ids = [item for sublist in data for item in sublist]
+        return [f'{self.DETAIL_BASE_URL}={value["id"]}' for value in ids]
+
+    def _open_file(self, file_name):
+        return open_json_file(file_name)
 
     def parse(self, response, category: str):
         return {

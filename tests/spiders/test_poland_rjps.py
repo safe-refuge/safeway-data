@@ -57,6 +57,32 @@ class TestPolandRJPSSpider:
         description = PolandRJPSSpider().parse(missing_info_place, category='test').get('description')
         assert 'data aktualizacji: 2013-12-13' in description
 
+    def get_spider(self):
+        class StubPolandRJPSSpider(PolandRJPSSpider):
+            DETAIL_BASE_URL = 'https://test.com/?id'
+
+            def _open_file(self, file_name):
+                mapping = {
+                    'foo.json': [{"id": 2321, "x": 18.59832, "y": 52.55788},
+                                 {"id": 2354, "x": 18.49855, "y": 52.998119}],
+                    'bar.json': [{"id": 2333, "x": 18.59832, "y": 52.55788},
+                                 {"id": 2336, "x": 18.49855, "y": 52.998119}]
+                }
+                return mapping.get(file_name, [])
+
+        return StubPolandRJPSSpider()
+
+    def test_build_url_from_one_file(self):
+        spider = self.get_spider()
+        urls = spider._build_urls(['foo.json'])
+        assert urls == ['https://test.com/?id=2321', 'https://test.com/?id=2354']
+
+    def test_build_url_from_more_files(self):
+        spider = self.get_spider()
+        urls = spider._build_urls(['foo.json', 'bar.json'])
+        assert urls == ['https://test.com/?id=2321', 'https://test.com/?id=2354',
+                        'https://test.com/?id=2333', 'https://test.com/?id=2336']
+
 
 class TestCategoryHandler:
     def get_handler(self, data):
@@ -114,7 +140,7 @@ class TestCategoryHandler:
         handler = self.get_handler(data)
         assert handler.get_categories_by_url('https://foo.com/123') == 'Medical,Children'
 
-    def test_build_mapping_onece(self):
+    def test_build_mapping_once(self):
         data = {'Medical': ['https://foo.com/123', 'https://foo.com/126']}
         handler = self.get_handler(data)
         handler.get_categories_by_url('https://foo.com/123')

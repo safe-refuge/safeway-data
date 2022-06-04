@@ -58,6 +58,46 @@ Saved 272 results into data/output.csv
 
 If you have any questions, contact @littlepea
 
+## Data flow
+
+Where are two main ways this CLI tool gets used:
+
+### 1) Converting data from a Google Sheet to CSV
+
+```shell
+❯ poetry run python main.py --spreadsheet-id 1Y1QLbJ6gvPvz8UI-TTIUUWv5bDpSNeUVY3h-7OV6tj0
+```
+
+This will run the [convert_spreadsheet](usecases/convert_data.py#L45) 
+method with the following steps:
+
+* Fetch list of [spreadsheet rows](models/spreadsheet_row.py) from a Google Sheet
+* Transform list of spreadsheet rows to list of [Points of Interest](models/point_of_interest.py)
+* Optionally, sanitize addresses
+* Find missing coordinates by geocoding addresses
+* Translate city names to English
+* Validate the final list of points
+* Save points to a CSV file
+
+### 2) Enhancing CSV data (scraped via spiders)
+
+When we scrape points of interests using spiders (see below) we save results in CSV (as points of interest) 
+and then we need to enhance them similar to step 1 above. 
+
+```shell
+❯ poetry run python main.py --input-file data/france_red_cross.csv
+```
+
+This will run the [convert_file](usecases/convert_data.py#L78) 
+method with the following steps:
+
+* Fetch list of points of interest from the input CSV file
+* Optionally, sanitize addresses
+* Find missing coordinates by geocoding addresses
+* Translate city names to English
+* Validate the final list of points
+* Save points to a CSV file
+
 ## Running tests
 
 ```shell
@@ -87,3 +127,38 @@ You can place your new spiders into `scraping/spiders` directory and implement a
 to the [Scrapy tutorial](https://docs.scrapy.org/en/latest/intro/tutorial.html).
 
 It's highly recommended to add unit tests for your spider's `parse` method.
+
+## Using VS Code
+
+VS Code does not immediately recognize the virtual environment location
+
+to make it work (and so imports are properly recognized)
+
+click Run => add configuration  and select Python from the list
+
+this will add a configuration launch.json
+
+you will need to add one line to this configuration
+
+```
+"env": {"PYTHONPATH": "${workspaceRoot}"}
+```
+
+it should look something like this
+
+```
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "env": {"PYTHONPATH": "${workspaceRoot}"},
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}
+```

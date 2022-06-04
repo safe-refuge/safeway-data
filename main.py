@@ -12,6 +12,7 @@ def main(
         dry_run: Optional[bool] = False,
         spreadsheet_id: Optional[str] = None,
         input_file: Optional[str] = None,
+        santitize_address: Optional[bool] = None
 ):
     settings = Settings(_env_file="config/.env")
 
@@ -23,7 +24,8 @@ def main(
     overrides = {"settings": settings, "log": typer.echo}
     if dry_run:
         overrides["writer"] = DummyWriter
-
+    if santitize_address:
+        overrides["settings"]["santitize_address"] = santitize_address
     component = implemented.ConvertSpreadsheetData(**overrides)
     results: List[PointOfInterest] = \
         component.usecase.convert_file(input_file) \

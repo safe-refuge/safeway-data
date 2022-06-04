@@ -32,15 +32,16 @@ class PolandRJPSSpider(scrapy.Spider):
         data = {category: self._build_urls(file_name) for category, file_name in CATEGORY_MAPPING.items()}
         handler = CategoryHandler(data)
 
-        for _, file_name in CATEGORY_MAPPING.items():
+        import pdb;pdb.set_trace()
+        for url, _ in handler.mapping.items():
+            categories = handler.get_categories_by_url(url)
 
             @memory.cache
             def cached_request_with_url(url: str):
                 return scrapy.Request(url=url, callback=self.parse,
-                                      cb_kwargs={'category': handler.get_categories_by_url(url)})
+                                      cb_kwargs={'category': categories})
 
-            for url in self._build_urls(file_name):
-                yield cached_request_with_url(url=url)
+            yield cached_request_with_url(url=url)
 
     def _build_urls(self, file_names: List[str]) -> List[str]:
         data = [self._open_file(f'{self.data_path}/{file_name}') for file_name in file_names]

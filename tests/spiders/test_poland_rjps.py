@@ -138,7 +138,9 @@ class TestCategoryHandler:
         data = OrderedDict({'Medical': ['https://foo.com/123', 'https://foo.com/126'],
                             'Children': ['https://foo.com/123']})
         handler = self.get_handler(data)
-        assert handler.get_categories_by_url('https://foo.com/123') == 'Medical,Children'
+        categories = handler.get_categories_by_url('https://foo.com/123')
+        assert 'Children' in categories
+        assert 'Medical' in categories
 
     def test_build_mapping_once(self):
         data = {'Medical': ['https://foo.com/123', 'https://foo.com/126']}

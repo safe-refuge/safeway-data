@@ -94,7 +94,7 @@ class PolandRJPSSpider(scrapy.Spider):
 
     def _get_update_date(self, response):
         data =  self._clean_spaces(response.css('body > div > div > div > div.data-aktualizacji::text').get()) or ''
-        return data.replace('aktualizacji', 'updated')
+        return data.replace('data aktualizacji', 'updated')
 
 
 def open_json_file(file_name: str) -> dict:

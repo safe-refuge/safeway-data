@@ -14,15 +14,19 @@ COUNTRY_NAME = 'Poland'
 DEFAULT_CATEGORY = "Any Help"
 
 CATEGORY_MAPPING = {
-    'Medical': [f'{DATA_PATH}/seniors.json'],
-    'Children': [f'{DATA_PATH}/family.json', f'{DATA_PATH}/children_and_youth.json'],
-    'Disability support': [f'{DATA_PATH}/people_with_disabilities.json'],
+    'Medical': ['seniors.json', 'health.json'],
+    'Children': ['family.json', 'children_and_youth.json'],
+    'Disability support': ['people_with_disabilities.json'],
+    'Mental help': ['addiction.json'],
+    'Social help': ['violence.json'],
+    'Finance': ['difficult_financial_situation.json']
 }
 
 
 class PolandRJPSSpider(scrapy.Spider):
     name = "poland_rjps"
     DETAIL_BASE_URL = 'https://rjps.mpips.gov.pl/RJPS/WJ/wyszukiwanie/pobierzDaneJednostki.do?jednostkiIds'
+    data_path = DATA_PATH
 
     def start_requests(self):
         data = {category: self._build_urls(file_name) for category, file_name in CATEGORY_MAPPING.items()}
@@ -39,7 +43,7 @@ class PolandRJPSSpider(scrapy.Spider):
                 yield cached_request_with_url(url=url)
 
     def _build_urls(self, file_names: List[str]) -> List[str]:
-        data = [self._open_file(file_name) for file_name in file_names]
+        data = [self._open_file(f'{self.data_path}/{file_name}') for file_name in file_names]
         ids = [item for sublist in data for item in sublist]
         return [f'{self.DETAIL_BASE_URL}={value["id"]}' for value in ids]
 

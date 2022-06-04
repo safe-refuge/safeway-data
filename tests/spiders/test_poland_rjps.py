@@ -51,11 +51,11 @@ class TestPolandRJPSSpider:
 
     def test_parse_update_date(self, normal_place):
         description = PolandRJPSSpider().parse(normal_place, category='test').get('description')
-        assert 'data aktualizacji: 2018-02-05' in description
+        assert 'data updated: 2018-02-05' in description
 
     def test_parse_missing_info_page(self, missing_info_place):
         description = PolandRJPSSpider().parse(missing_info_place, category='test').get('description')
-        assert 'data aktualizacji: 2013-12-13' in description
+        assert 'data updated: 2013-12-13' in description
 
     def get_spider(self):
         class StubPolandRJPSSpider(PolandRJPSSpider):

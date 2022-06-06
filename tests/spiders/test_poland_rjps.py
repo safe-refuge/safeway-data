@@ -60,7 +60,6 @@ class TestPolandRJPSSpider:
     def get_spider(self):
         class StubPolandRJPSSpider(PolandRJPSSpider):
             DETAIL_BASE_URL = 'https://test.com/?id'
-            data_path = ''
 
             def _fetch_point_ids_by_category(self, category_id_group):
                 mapping = {

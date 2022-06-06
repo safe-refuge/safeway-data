@@ -9,7 +9,6 @@ from config.settings import Settings
 
 memory = Memory(location='cache/poland_rjps')
 settings = Settings()
-DATA_PATH = f'{settings.spider_data_path}/rips'
 COUNTRY_NAME = 'Poland'
 
 CATEGORY_MAPPING = {
@@ -25,7 +24,6 @@ CATEGORY_MAPPING = {
 class PolandRJPSSpider(scrapy.Spider):
     name = "poland_rjps"
     DETAIL_BASE_URL = 'https://rjps.mpips.gov.pl/RJPS/WJ/wyszukiwanie/pobierzDaneJednostki.do?jednostkiIds'
-    data_path = DATA_PATH
 
     def start_requests(self):
         data = {category: self._build_urls(category_ids) for category, category_ids in CATEGORY_MAPPING.items()}

@@ -5,6 +5,8 @@ import scrapy
 import json
 
 from joblib import Memory
+
+from config.constants import DEFAULT_CATEGORY
 from config.settings import Settings
 
 memory = Memory(location='cache/poland_rjps')
@@ -55,7 +57,7 @@ class PolandRJPSSpider(scrapy.Spider):
             'address': self._get_address(response),
             'lat': '',
             'lng': '',
-            'category': category or settings.default_category,
+            'category': category or DEFAULT_CATEGORY,
             'organizations': '',
             'description': self._get_description(response)
         }

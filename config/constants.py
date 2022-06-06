@@ -18,3 +18,4 @@ CATEGORIES: Set[str] = {
     'Disability support',
     'Pets'
 }
+DEFAULT_CATEGORY: str = 'Any Help'

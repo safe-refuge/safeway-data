@@ -1,6 +1,6 @@
 from collections import defaultdict
 from typing import List, Dict
-
+import requests
 import scrapy
 import json
 
@@ -14,12 +14,12 @@ COUNTRY_NAME = 'Poland'
 DEFAULT_CATEGORY = "Any Help"
 
 CATEGORY_MAPPING = {
-    'Medical': ['seniors.json', 'health.json'],
-    'Children': ['family.json', 'children_and_youth.json'],
-    'Disability support': ['people_with_disabilities.json'],
-    'Mental help': ['addiction.json'],
-    'Social help': ['violence.json'],
-    'Finance': ['difficult_financial_situation.json']
+    'Medical': ['21,22,23,24,20,19', '25,26,27,28,29,30'],
+    'Children': ['16,13,17,18,14,15', '3,4,1,2,5,6'],
+    'Disability support': ['7,8,9,10,11,12'],
+    'Mental help': ['31,32,33,34'],
+    'Social help': ['41,45,42,43,44'],
+    'Finance': ['35,36,37,38,39,40']
 }
 
 
@@ -29,10 +29,9 @@ class PolandRJPSSpider(scrapy.Spider):
     data_path = DATA_PATH
 
     def start_requests(self):
-        data = {category: self._build_urls(file_name) for category, file_name in CATEGORY_MAPPING.items()}
+        data = {category: self._build_urls(category_ids) for category, category_ids in CATEGORY_MAPPING.items()}
         handler = CategoryHandler(data)
 
-        import pdb;pdb.set_trace()
         for url, _ in handler.mapping.items():
             categories = handler.get_categories_by_url(url)
 
@@ -43,13 +42,13 @@ class PolandRJPSSpider(scrapy.Spider):
 
             yield cached_request_with_url(url=url)
 
-    def _build_urls(self, file_names: List[str]) -> List[str]:
-        data = [self._open_file(f'{self.data_path}/{file_name}') for file_name in file_names]
+    def _build_urls(self, category_ids: List[str]) -> List[str]:
+        data = [self._fetch_point_ids_by_category(category_id_group) for category_id_group in category_ids]
         ids = [item for sublist in data for item in sublist]
         return [f'{self.DETAIL_BASE_URL}={value["id"]}' for value in ids]
 
-    def _open_file(self, file_name):
-        return open_json_file(file_name)
+    def _fetch_point_ids_by_category(self, category_id_group: str):
+        return fetch_point_ids_by_category(category_id_group)
 
     def parse(self, response, category: str):
         return {
@@ -93,14 +92,38 @@ class PolandRJPSSpider(scrapy.Spider):
         return response.css('div[title="Strona www"] > div > div::text').get() or ''
 
     def _get_update_date(self, response):
-        data =  self._clean_spaces(response.css('body > div > div > div > div.data-aktualizacji::text').get()) or ''
+        data = self._clean_spaces(response.css('body > div > div > div > div.data-aktualizacji::text').get()) or ''
         return data.replace('data aktualizacji', 'updated')
 
 
-def open_json_file(file_name: str) -> dict:
-    with open(file_name, 'r') as f:
-        data = json.load(f)
-    return data
+@memory.cache
+def fetch_point_ids_by_category(category_id_group: str) -> dict:
+    url = "https://rjps.mpips.gov.pl/RJPS/WJ/wyszukiwanie/zaladujDane.do"
+    payload = json.dumps({
+        "filtry": {
+            "miejscowosc": "",
+            "wojewodztwo": "",
+            "powiat": "",
+            "gmina": "",
+            "odleglosc": 0,
+            "lokalizacja": "",
+            "szukanaFraza": "",
+            "podkategorie": category_id_group,
+            "stronaListy": 1,
+            "liczbaPozycjiLista": "20",
+            "wersja": "1",
+            "widocznyPanel": "mapa",
+            "wejscieKarta": "",
+            "idJednostki": ""
+        },
+        "stronaListy": 1
+    })
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    return response.json()
 
 
 class CategoryHandler:

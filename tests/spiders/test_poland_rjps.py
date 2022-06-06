@@ -62,25 +62,25 @@ class TestPolandRJPSSpider:
             DETAIL_BASE_URL = 'https://test.com/?id'
             data_path = ''
 
-            def _open_file(self, file_name):
+            def _fetch_point_ids_by_category(self, category_id_group):
                 mapping = {
-                    '/foo.json': [{"id": 2321, "x": 18.59832, "y": 52.55788},
-                                  {"id": 2354, "x": 18.49855, "y": 52.998119}],
-                    '/bar.json': [{"id": 2333, "x": 18.59832, "y": 52.55788},
-                                  {"id": 2336, "x": 18.49855, "y": 52.998119}]
+                    '21,22,23,24,20,19': [{"id": 2321, "x": 18.59832, "y": 52.55788},
+                                          {"id": 2354, "x": 18.49855, "y": 52.998119}],
+                    '25,26,27,28,29,30': [{"id": 2333, "x": 18.59832, "y": 52.55788},
+                                          {"id": 2336, "x": 18.49855, "y": 52.998119}]
                 }
-                return mapping.get(file_name, [])
+                return mapping.get(category_id_group, [])
 
         return StubPolandRJPSSpider()
 
     def test_build_url_from_one_file(self):
         spider = self.get_spider()
-        urls = spider._build_urls(['foo.json'])
+        urls = spider._build_urls(['21,22,23,24,20,19'])
         assert urls == ['https://test.com/?id=2321', 'https://test.com/?id=2354']
 
     def test_build_url_from_more_files(self):
         spider = self.get_spider()
-        urls = spider._build_urls(['foo.json', 'bar.json'])
+        urls = spider._build_urls(['21,22,23,24,20,19', '25,26,27,28,29,30'])
         assert urls == ['https://test.com/?id=2321', 'https://test.com/?id=2354',
                         'https://test.com/?id=2333', 'https://test.com/?id=2336']
 

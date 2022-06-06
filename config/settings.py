@@ -14,7 +14,8 @@ class Settings(BaseSettings):
     countries: List[str] = ["ALL"]
     output_file: str = "data/output.csv"
     sanitize_address: bool = Field(False, env="SANITIZE_ADDRESS")
-    spider_data_path: str = 'data/spiders'
+    spider_data_path: str = "data/spiders"
+    default_category = Field("Any Help", env="DEFAULT_CATEGORY")
 
     class Config:
         env_file = "config/.env"

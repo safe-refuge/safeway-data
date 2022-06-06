@@ -11,7 +11,6 @@ memory = Memory(location='cache/poland_rjps')
 settings = Settings()
 DATA_PATH = f'{settings.spider_data_path}/rips'
 COUNTRY_NAME = 'Poland'
-DEFAULT_CATEGORY = "Any Help"
 
 CATEGORY_MAPPING = {
     'Medical': ['21,22,23,24,20,19', '25,26,27,28,29,30'],
@@ -58,7 +57,7 @@ class PolandRJPSSpider(scrapy.Spider):
             'address': self._get_address(response),
             'lat': '',
             'lng': '',
-            'category': category or DEFAULT_CATEGORY,
+            'category': category or settings.default_category,
             'organizations': '',
             'description': self._get_description(response)
         }

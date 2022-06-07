@@ -36,16 +36,16 @@ class TestPolandRJPSSpider:
         assert address == '16-060 Zabłudów ul. Rynek 8'
 
     def test_parse_email(self, normal_place):
-        description = PolandRJPSSpider().parse(normal_place, category='test').get('description')
-        assert 'biuro@mops-zabludow.pl' in description
+        point = PolandRJPSSpider().parse(normal_place, category='test')
+        assert 'biuro@mops-zabludow.pl' == point.get('email')
 
     def test_parse_phone(self, normal_place):
-        description = PolandRJPSSpider().parse(normal_place, category='test').get('description')
-        assert 'tel. 85 7188100' in description
+        point = PolandRJPSSpider().parse(normal_place, category='test')
+        assert 'tel. 85 7188100' == point.get('phone')
 
     def test_parse_website(self, normal_place):
-        description = PolandRJPSSpider().parse(normal_place, category='test').get('description')
-        assert 'http://bip.mops.um.zabludow.wrotapodlasia.pl' in description
+        point = PolandRJPSSpider().parse(normal_place, category='test')
+        assert 'http://bip.mops.um.zabludow.wrotapodlasia.pl' == point.get('url')
 
     def test_parse_update_date(self, normal_place):
         description = PolandRJPSSpider().parse(normal_place, category='test').get('description')

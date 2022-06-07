@@ -3,6 +3,8 @@ import logging
 
 import scrapy
 
+from config.constants import DEFAULT_CATEGORY
+
 
 log = logging.getLogger(__name__)
 
@@ -26,8 +28,6 @@ SERVICES_TO_CATEGORIES = {
     'dynamique jeunesse': 'Children',
     'postes de secours': 'Any help',
 }
-
-DEFAULT_CATEGORY = 'Any Help'
 
 
 class FranceRedCrossSpider(scrapy.Spider):

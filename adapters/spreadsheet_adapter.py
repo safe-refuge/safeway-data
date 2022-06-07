@@ -19,12 +19,16 @@ class SpreadsheetAdapter:
         return [self.transform_row(row) for row in source]
 
     def transform_row(self, row: SpreadsheetRow) -> PointOfInterest:
+        rename = {
+            'opening_hours': 'open_hours',
+        }
         fields = {}
 
         for name, value in row.dict().items():
             field = self.ALIASES.get(name, name)
             converter = getattr(self, f"convert_{field}", self.convert_noop)
-            fields[field] = converter(value)
+            field_name = rename.get(field, field)
+            fields[field_name] = converter(value)
 
         return PointOfInterest(**fields)
 
@@ -40,6 +44,12 @@ class SpreadsheetAdapter:
 
     def convert_lng(self, longitude: str) -> str:
         return self._convert_number(longitude)
+
+    def convert_organizations(self, organizations: str) -> List[str]:
+        return [organizations]
+
+    def convert_categories(self, organizations: str) -> List[str]:
+        return [organizations]
 
     @staticmethod
     def _convert_number(number: str) -> str:

@@ -6,28 +6,28 @@ from scrapy import Spider, Selector
 from scrapy.http import Response
 
 
-BASE_ADDRESS_PATTERN = r"(s.\s|str.\s|bd.\s?|sat.\s|satul\s|com.\s|z.\s)(\d{0,10})(\D+)"
-ADDRESS_CHECK_PATTERN = rf"{BASE_ADDRESS_PATTERN}(,|\d|\(|$)"
-ADDRESS_PATTERN1 = r"(s.\s)(.+)(,\sstr.\s)(\D+)([\d\w/]+)"
-ADDRESS_PATTERN2 = rf"{BASE_ADDRESS_PATTERN}(,|\()"
-ADDRESS_PATTERN3 = rf"{BASE_ADDRESS_PATTERN}(,|[\d\w/]+|\()"
+BASE_ADDRESS_PATTERN = r'(s.\s|str.\s|bd.\s?|sat.\s|satul\s|com.\s|z.\s)(\d{0,10})(\D+)'
+ADDRESS_CHECK_PATTERN = rf'{BASE_ADDRESS_PATTERN}(,|\d|\(|$)'
+ADDRESS_PATTERN1 = r'(s.\s)(.+)(,\sstr.\s)(\D+)([\d\w/]+)'
+ADDRESS_PATTERN2 = rf'{BASE_ADDRESS_PATTERN}(,|\()'
+ADDRESS_PATTERN3 = rf'{BASE_ADDRESS_PATTERN}(,|[\d\w/]+|\()'
 KNOWN_STREETS = {'Hristo Botev'}
 VENUE_PREFIXES = {'IP', 'Centrul', 'Complexul', 'Biserica'}
 
 
 def clean(value: str) -> str:
-    value = re.sub(r"\s{2,10}", " ", value)
-    return value.replace("\r\n", "").strip()
+    value = re.sub(r'\s{2,10}', ' ', value)
+    return value.replace('\r\n', '').strip()
 
 
 def clean_punctuation(value: str) -> str:
-    return value.strip().replace(",", "").replace("(", "").replace(")", "").strip()
+    return value.strip().replace(',', '').replace('(', '').replace(')', '').strip()
 
 
 def strip_punctuation(value: str) -> str:
     value = value.strip()
 
-    for punctuation in [",", "(", ")"]:
+    for punctuation in [',', '(', ')']:
         if value.startswith(punctuation):
             value = value[1:]
 
@@ -40,12 +40,12 @@ def strip_punctuation(value: str) -> str:
 def parse_details(details: str, city: str = None) -> Tuple[str, str]:
     # clear the city name from details
     if city:
-        details = re.sub(rf"(mun|or|orașul)(.)(\s?)({city})", "", details).replace(city, "")
+        details = re.sub(rf'(mun|or|orașul)(.)(\s?)({city})', '', details).replace(city, '')
 
     # add prefixes to known streets
     for street in KNOWN_STREETS:
         if street in details:
-            details = details.replace(street, f"s. {street}")
+            details = details.replace(street, f's. {street}')
 
     # try to find address
     address = find_address(details)
@@ -80,7 +80,7 @@ def find_address(details: str) -> Union[str, None]:
         return
 
     address = match.group()
-    if address.endswith(","):
+    if address.endswith(','):
         return address
 
     for pattern in [ADDRESS_PATTERN1, ADDRESS_PATTERN2, ADDRESS_PATTERN3]:
@@ -103,11 +103,11 @@ def find_venue(details: str) -> Union[str, None]:
     venue_prefix = find_venue_prefix(details)
     if venue_prefix:
         name = sorted(details.split(venue_prefix), key=lambda x: -len(x))[0]
-        return f"{venue_prefix}{name}"
+        return f'{venue_prefix}{name}'
 
 
 class DopomogaSpider(Spider):
-    name = "dopomoga"
+    name = 'dopomoga'
     start_urls = [
         'https://dopomoga.gov.md/akkreditovannye-centry-dlya-bezhencev/'
     ]
@@ -120,15 +120,15 @@ class DopomogaSpider(Spider):
             name, address = parse_details(details, city=city)
 
             point = {
-                "name": name,
-                "country": "Moldova",
-                "city": city,
-                "address": f"Republica Moldova, {city}, {address}",
-                "categories": "Accommodation",
-                "description": f"Capacity: {capacity}",
-                "organizations": "",
-                "lat": "",
-                "lng": "",
+                'name': name,
+                'country': 'Moldova',
+                'city': city,
+                'address': f'Republica Moldova, {city}, {address}',
+                'categories': ['Accommodation'],
+                'description': f'Capacity: {capacity}',
+                'organizations': ['Domomoga Moldova'],
+                'lat': '',
+                'lng': '',
             }
 
             yield point

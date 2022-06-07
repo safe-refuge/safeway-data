@@ -18,8 +18,8 @@ def point_of_interest():
         address='ul. Zamenhofa 1, 00-153',
         lat='50.847608',
         lng='16.473205',
-        categories="General",
-        organizations='Fundacja “Nasz Wybór”',
+        categories=['General'],
+        organizations=['Fundacja “Nasz Wybór”'],
         description='Crisis support center'
     )
 
@@ -38,8 +38,8 @@ def poi_with_city_in_english():
         address='or. Dondușeni, str. Ștefan cel Mare, 30 (could not locate on Google maps)',
         lat='',
         lng='',
-        categories='Accredited Refugee Center ',
-        organizations='',
+        categories=['Accredited Refugee Center '],
+        organizations=[],
         description='Refugee Center in a retreat center with 60 places '
     )
 
@@ -56,7 +56,7 @@ class TestCityTranslator:
         subject = CityTranslator(Settings(), stub_fetch_translated_text)
         result = subject.translate([point_of_interest])
         enhanced: PointOfInterest = result[0]
-        assert enhanced.city == "Warsaw"
+        assert enhanced.city == 'Warsaw'
 
     def test_translation_with_english(self, poi_with_city_in_english: PointOfInterest):
         subject = CityTranslator(Settings(), stub_fetch_translated_text)

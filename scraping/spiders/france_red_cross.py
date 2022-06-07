@@ -73,6 +73,9 @@ def parse_point(block):
     point = {
         'name': name,
         'country': 'France',
+        'organizations': ['Red Cross France'],
+        'lat': '',
+        'lng': '',
     }
 
     # XXX: all info here is in French, might need to either make it explicit
@@ -82,12 +85,6 @@ def parse_point(block):
         point.update(**parse_point_keys(paragraph))
 
     normalize_point_data(point)
-
-    point.update({
-        "organizations": "",
-        "lat": "",
-        "lng": "",
-    })
 
     return point
 
@@ -109,22 +106,9 @@ def normalize_point_data(point):
     if not point['categories']:
         point['categories'] = [DEFAULT_CATEGORY]
 
-    point['categories'] = ','.join(point['categories'])
-
     if point.get('_other_services'):
         services = ', '.join(point['_other_services'])
         point['description'] += f'\nOther services: {services}'
-
-    if point.get('_website'):
-        point['description'] += f'\nWebsite: {point["_website"]}'
-
-    if point.get('_phone'):
-        point['description'] += f'\nContact information: {point["_phone"]}'
-        if point.get('_fax'):
-            point['description'] += f', fax {point["_phone"]}'
-
-    if point.get('_working_hours'):
-        point['description'] += f'\nWorking hours: {point["_working_hours"]}'
 
     point['description'] = point['description'].strip()
 
@@ -139,10 +123,10 @@ def parse_point_keys(paragraph):
         'adresse': (None, parse_address),
         'actions': (None, parse_actions),
         'filière ': (None, parse_categories),
-        'site web': ('_website', parse_website),
-        'téléphone': ('_phone', parse_default_key),
+        'site web': ('url', parse_website),
+        'téléphone': ('phone', parse_default_key),
         'fax': ('_fax', parse_default_key),
-        "heures d'ouverture": ('_working_hours', parse_default_key),
+        "heures d'ouverture": ('open_hours', parse_default_key),
     }
 
     title = paragraph.css('strong::text').get().lower()

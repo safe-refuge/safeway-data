@@ -63,11 +63,13 @@ class CanadaImmigrationServicesSpider(scrapy.Spider):
                 'city': point['City']['en'],
                 'address': f'Canada, {point["Province"]["en"]}, '
                            f'{point["City"]["en"]}, {point["Address"]["en"]}',
-                'categories': ','.join(relevant_categories),
+                'categories': relevant_categories,
                 'description': '\n'.join(description),
-                'organizations': '',
+                'organizations': ['Canada IRCC'],
                 'lat': point['Coordinates']['Latitude'],
                 'lng': point['Coordinates']['Longitude'],
+                'phone': point.get('Telephone', {}).get('en', ''),
+                'email': point.get('Email', {}).get('en', ''),
             }
 
 
@@ -97,10 +99,6 @@ def build_description(point, other_categories):
     description = []
     if point.get('Note', {}).get('en'):
         description.append(f'{point["Note"]["en"]}')
-    if point.get('Telephone', {}).get('en'):
-        description.append(f'Phone: {point["Telephone"]["en"]}')
-    if point.get('Email', {}).get('en'):
-        description.append(f'Email: {point["Email"]["en"]}')
     if other_categories:
         description.append(f'Other services: ' + ', '.join(other_categories))
     return description

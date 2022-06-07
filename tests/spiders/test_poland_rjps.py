@@ -5,10 +5,8 @@ from scrapy.http import HtmlResponse
 
 from repositories.csv import open_read_only_file
 from scraping.spiders.poland_rjps import PolandRJPSSpider, CategoryHandler
-from config.settings import Settings
 
-settings = Settings()
-DATA_PATH = f'{settings.spider_data_path}/rips'
+DATA_PATH = f'tests/spiders/data/rips'
 
 
 def build_response_with_file(file_name: str) -> HtmlResponse:

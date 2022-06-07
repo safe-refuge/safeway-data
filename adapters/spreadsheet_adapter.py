@@ -9,26 +9,23 @@ from models.spreadsheet_row import SpreadsheetRow
 class SpreadsheetAdapter:
     ALIASES = {
         # Same: name, city, address, organizations, descriptions
-        "latitude": "lat",
-        "longitude": "lng",
-        "category": "categories",
-        "country_code": "country"
+        'latitude': 'lat',
+        'longitude': 'lng',
+        'category': 'categories',
+        'country_code': 'country',
+        'opening_hours': 'open_hours',
     }
 
     def transform(self, source: List[SpreadsheetRow]) -> List[PointOfInterest]:
         return [self.transform_row(row) for row in source]
 
     def transform_row(self, row: SpreadsheetRow) -> PointOfInterest:
-        rename = {
-            'opening_hours': 'open_hours',
-        }
         fields = {}
 
         for name, value in row.dict().items():
             field = self.ALIASES.get(name, name)
-            converter = getattr(self, f"convert_{field}", self.convert_noop)
-            field_name = rename.get(field, field)
-            fields[field_name] = converter(value)
+            converter = getattr(self, f'convert_{field}', self.convert_noop)
+            fields[field] = converter(value)
 
         return PointOfInterest(**fields)
 
@@ -37,7 +34,7 @@ class SpreadsheetAdapter:
 
     def convert_country(self, country_code: str) -> str:
         country = pycountry.countries.get(alpha_2=country_code)
-        return country.name if country else ""
+        return country.name if country else ''
 
     def convert_lat(self, latitude: str) -> str:
         return self._convert_number(latitude)
@@ -53,4 +50,4 @@ class SpreadsheetAdapter:
 
     @staticmethod
     def _convert_number(number: str) -> str:
-        return number.replace(",", ".")
+        return number.replace(',', '.')

@@ -1,4 +1,5 @@
 import re
+import logging
 
 from typing import List, Tuple, Union
 
@@ -13,6 +14,9 @@ ADDRESS_PATTERN2 = rf'{BASE_ADDRESS_PATTERN}(,|\()'
 ADDRESS_PATTERN3 = rf'{BASE_ADDRESS_PATTERN}(,|[\d\w/]+|\()'
 KNOWN_STREETS = {'Hristo Botev'}
 VENUE_PREFIXES = {'IP', 'Centrul', 'Complexul', 'Biserica'}
+
+
+log = logging.getLogger(__name__)
 
 
 def clean(value: str) -> str:
@@ -115,6 +119,9 @@ class DopomogaSpider(Spider):
     def parse(self, response: Response):
         rows: List[Selector] = response.css('.ty-wysiwyg-content table tr')
         for row in rows[1:]:
+            if row.css('td br'):
+                log.info('Empty row: %s', row)
+                continue
             _, city, details, capacity = [clean(cell) for cell in row.css('td::text').getall()]
 
             name, address = parse_details(details, city=city)

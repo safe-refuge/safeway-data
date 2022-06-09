@@ -6,7 +6,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.9, 3.10, 3.11]
+        python-version: [3.9, 3.10]
         poetry-version: [1.1.11]
         os: [ubuntu-18.04, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
@@ -21,6 +21,6 @@ jobs:
         with:
           poetry-version: ${{ matrix.poetry-version }}
       - name: run poetry install
-        run: poetry install -vvv
+        run: poetry install
       - name: run tests
         run: poetry run pytest

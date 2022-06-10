@@ -1,3 +1,5 @@
+[![CI](https://github.com/littlepea/safeway-data/actions/workflows/test.yml/badge.svg)](https://github.com/littlepea/safeway-data/actions/workflows/test.yml)
+
 # safeway-data
 
 Data mining tools for Safeway app.

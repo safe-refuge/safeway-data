@@ -16,7 +16,9 @@ class PointOfInterest(BaseModel):
     email: str = ''
     url: str = ''
     socialmedia: str = ''
-    messenger: str = ''
+    fb_messenger: str = ''
+    telegram: str = ''
+    whatsapp: str = ''
     open_hours: str = ''
     tags: List[str] = []
     icon: str = ''

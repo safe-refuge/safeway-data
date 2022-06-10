@@ -43,10 +43,13 @@ class SpreadsheetAdapter:
         return self._convert_number(longitude)
 
     def convert_organizations(self, organizations: str) -> List[str]:
-        return [organizations]
+        return organizations.split(', ')
 
-    def convert_categories(self, organizations: str) -> List[str]:
-        return [organizations]
+    def convert_categories(self, categories: str) -> List[str]:
+        return categories.split(', ')
+
+    def convert_tags(self, tags: str) -> List[str]:
+        return tags.split(', ')
 
     @staticmethod
     def _convert_number(number: str) -> str:

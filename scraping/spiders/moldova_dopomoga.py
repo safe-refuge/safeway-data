@@ -125,7 +125,6 @@ def parse_details(details: str, city: str = None) -> Tuple[str, str]:
         address = strip_punctuation(parts[0])
         return name, address or name
 
-
     parts = details.split(",", 1)
     if len(parts) == 1:
         value = clean(parts[0])

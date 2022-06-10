@@ -83,7 +83,7 @@ def test_spreadsheet_data_conversion():
         '"ul. Zamenhofa 1, 00-153",Accommodation,' \
         'Fundacja “Nasz Wybór”,Crisis support center,' \
         '52.24734033,20.9964833,(+48) 727 805 764 ,' \
-        'biuro@ukrainskidom.pl,,,,' \
+        'biuro@ukrainskidom.pl,,,,,,' \
         '"Monday:        09:00–19:00\nTuesday:       09:00–19:00\n' \
         'Wednesday:       09:00–19:00\nThursday:       09:00–19:00\n' \
         'Friday:       09:00–19:00\nSaturday:        09:00–17:00\n' \

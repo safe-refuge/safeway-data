@@ -1,5 +1,5 @@
-from typing import List
-from pydantic import BaseModel
+from typing import List, Any
+from pydantic import BaseModel, validator
 
 
 class PointOfInterest(BaseModel):
@@ -16,7 +16,7 @@ class PointOfInterest(BaseModel):
     email: str = ''
     url: str = ''
     socialmedia: str = ''
-    fb_messenger: str = ''
+    messenger: str = ''
     telegram: str = ''
     whatsapp: str = ''
     open_hours: str = ''
@@ -24,3 +24,17 @@ class PointOfInterest(BaseModel):
     icon: str = ''
     approved: bool = True
     active: bool = True
+
+    @validator('categories', pre=True)
+    def ensure_categories_as_list(cls, categories: Any) -> List[str]:
+        return _convert_to_list(categories)
+
+    @validator('organizations', pre=True)
+    def ensure_organizations_as_list(cls, organizations: Any) -> List[str]:
+        return _convert_to_list(organizations)
+
+
+def _convert_to_list(value: Any) -> List[str]:
+    if isinstance(value, str):
+        return value.split(',')
+    return value

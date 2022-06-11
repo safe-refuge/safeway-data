@@ -6,6 +6,7 @@ from services.address_sanitizer import AddressSanitizer
 from models.point_of_interest import PointOfInterest
 from implemented import ConvertSpreadsheetData
 
+
 @pytest.fixture
 def point_of_interest():
     return PointOfInterest(
@@ -15,9 +16,9 @@ def point_of_interest():
         address='ul. Zamenhofa 1, 00-153',
         lat='',
         lng='',
-        categories="General",
-        organizations='Fundacja “Nasz Wybór”',
-        description='Crisis support center'
+        categories=['General'],
+        organizations=['Fundacja “Nasz Wybór”'],
+        description='Crisis support center',
     )
 
 
@@ -34,7 +35,7 @@ def fake_init_google_maps(key):
 
 
 def test_address_sanitizer(point_of_interest: PointOfInterest):
-   
+
     addressSanitizer: AddressSanitizer = ConvertSpreadsheetData(
         make_places_request=fake_make_places_request,
         init_google_maps=fake_init_google_maps).address_sanitizer
@@ -46,7 +47,7 @@ def test_address_sanitizer(point_of_interest: PointOfInterest):
 #Test with IO
 
 # def test_address_sanitizer(point_of_interest: PointOfInterest):
-   
+
 #     addressSanitizer = AddressSanitizer(Settings(), print)
 #     addressSanitizer.settings.sanitize_address = True
 #     result = addressSanitizer.sanitize([point_of_interest])

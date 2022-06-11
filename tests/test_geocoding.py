@@ -1,10 +1,9 @@
 import pytest
 
-from returns.unsafe import unsafe_perform_io
-
 from services.geocoding import GeoCodingProcessor
 from models.point_of_interest import PointOfInterest
 from implemented import ConvertSpreadsheetData
+
 
 @pytest.fixture
 def point_of_interest():
@@ -15,8 +14,8 @@ def point_of_interest():
         address='ul. Zamenhofa 1, 00-153',
         lat='',
         lng='',
-        categories="General",
-        organizations='Fundacja “Nasz Wybór”',
+        categories=['General'],
+        organizations=['Fundacja “Nasz Wybór”'],
         description='Crisis support center'
     )
 
@@ -26,8 +25,8 @@ def fake_make_geocode_request(*args, **kwargs):
         {
             'geometry': {
                 'location': {
-                    "lat": "52.2473216",
-                    "lng": "20.9964703"
+                    'lat': '52.2473216',
+                    'lng': '20.9964703'
                 }
             }
         }

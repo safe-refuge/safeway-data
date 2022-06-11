@@ -57,9 +57,12 @@ class PolandRJPSSpider(scrapy.Spider):
             'address': self._get_address(response),
             'lat': '',
             'lng': '',
-            'category': category or DEFAULT_CATEGORY,
-            'organizations': '',
-            'description': self._get_description(response)
+            'categories': [category or DEFAULT_CATEGORY],
+            'organizations': ['Poland RJPS'],
+            'description': self._get_description(response),
+            'phone': self._get_phone(response),
+            'email': self._get_email(response),
+            'url': self._get_website(response),
         }
 
     def _get_name(self, response):
@@ -74,11 +77,9 @@ class PolandRJPSSpider(scrapy.Spider):
         return ''.join(lines)
 
     def _get_description(self, response):
-        rows = [self._get_email(response),
-                self._get_phone(response),
-                self._get_website(response),
-                self._get_update_date(response)]
-
+        rows = [
+            self._get_update_date(response),
+        ]
         return '\n'.join(map(self._clean_spaces, rows))
 
     def _get_email(self, response):
@@ -88,7 +89,8 @@ class PolandRJPSSpider(scrapy.Spider):
         return response.css('div[title=Telefon] > div > span.wrap-anywhere::text').get() or ''
 
     def _get_website(self, response):
-        return response.css('div[title="Strona www"] > div > div::text').get() or ''
+        url = response.css('div[title="Strona www"] > div > div::text').get() or ''
+        return url.strip()
 
     def _get_update_date(self, response):
         data = self._clean_spaces(response.css('body > div > div > div > div.data-aktualizacji::text').get()) or ''

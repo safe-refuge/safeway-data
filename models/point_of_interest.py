@@ -1,13 +1,26 @@
+from typing import List
 from pydantic import BaseModel
 
 
 class PointOfInterest(BaseModel):
-    name: str = ""
-    country: str = ""
-    city: str = ""
-    address: str = ""
-    lat: str = ""
-    lng: str = ""
-    categories: str = ""
-    organizations: str = ""
-    description: str = ""
+    name: str = ''
+    country: str = ''
+    city: str = ''
+    address: str = ''
+    categories: List[str] = []
+    organizations: List[str] = []
+    description: str = ''
+    lat: str = ''
+    lng: str = ''
+    phone: str = ''
+    email: str = ''
+    url: str = ''
+    socialmedia: str = ''
+    fb_messenger: str = ''
+    telegram: str = ''
+    whatsapp: str = ''
+    open_hours: str = ''
+    tags: List[str] = []
+    icon: str = ''
+    approved: bool = True
+    active: bool = True

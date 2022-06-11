@@ -59,5 +59,6 @@ def test_dopomoga_parse(betamax_session):
             point.address,
             point.city,
             point.country,
-            point.description
+            point.description,
+            point.organizations,
         ])

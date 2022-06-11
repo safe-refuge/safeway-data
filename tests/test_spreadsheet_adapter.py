@@ -20,7 +20,7 @@ def spreadsheet_row():
         phone='(+48) 727 805 764 ',
         website='https://ukrainskidom.pl/',
         email='biuro@ukrainskidom.pl',
-        opening_hours='Monday:        09:00–19:00\nTuesday:       09:00–19:00'
+        opening_hours='Monday:        09:00–19:00\nTuesday:       09:00–19:00',
     )
 
 
@@ -33,9 +33,13 @@ def point_of_interest():
         address='ul. Zamenhofa 1, 00-153',
         lat='52.24734033',
         lng='20.9964833',
-        categories="General",
-        organizations='Fundacja “Nasz Wybór”',
-        description='Crisis support center'
+        categories=["General"],
+        organizations=['Fundacja “Nasz Wybór”'],
+        description='Crisis support center',
+        phone='(+48) 727 805 764 ',
+        website='https://ukrainskidom.pl/',
+        email='biuro@ukrainskidom.pl',
+        open_hours='Monday:        09:00–19:00\nTuesday:       09:00–19:00',
     )
 
 

@@ -1,8 +1,6 @@
 from typing import Set
 
 
-DEFAULT_CATEGORY = 'Any help'
-
 CATEGORIES: Set[str] = {
     'Clothes',
     'Accommodation',
@@ -21,4 +19,5 @@ CATEGORIES: Set[str] = {
     'Disability support',
     'Pets'
 }
+
 DEFAULT_CATEGORY: str = 'Any help'

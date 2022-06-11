@@ -18,6 +18,10 @@ def close_file(file: TextIO):
     file.close()
 
 
+def convert_list(data: list) -> str:
+    return ','.join(data)
+
+
 @dataclass
 class CSVRepository:
 
@@ -28,13 +32,20 @@ class CSVRepository:
     close_file: Callable = close_file
 
     def write(self, entries: List[PointOfInterest]) -> List[PointOfInterest]:
+        converters = {
+            list: convert_list,
+        }
         fieldnames = list(PointOfInterest.schema()["properties"].keys())
         file = self.open_file(self.settings.output_file)
 
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         for entry in entries:
-            writer.writerow(entry.dict())
+            row = {
+                k: converters.get(type(v), lambda x: x)(v)
+                for k, v in entry.dict().items()
+            }
+            writer.writerow(row)
 
         self.close_file(file)
 

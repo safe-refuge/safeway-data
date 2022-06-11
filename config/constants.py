@@ -21,3 +21,8 @@ CATEGORIES: Set[str] = {
 }
 
 DEFAULT_CATEGORY: str = 'Any help'
+
+
+if __name__ == '__main__':
+    for category in CATEGORIES:
+        print(f' - {category}')

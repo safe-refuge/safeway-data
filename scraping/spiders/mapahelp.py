@@ -1,3 +1,4 @@
+import re
 import logging
 
 import scrapy
@@ -6,6 +7,22 @@ from config.constants import DEFAULT_CATEGORY
 
 
 log = logging.getLogger(__name__)
+
+
+SOCIAL_PATTERNS = [
+    ("messenger", re.compile(r"(https://www\.facebook\.com/[^,;\s]+)")),
+    ("telegram", re.compile(r"(https://t\.me/[^,;\s]+)")),
+    ("telegram", re.compile(
+        r"(?:telegram|телеграм)[-:\s]*@?([_+a-z0-9]+)", flags=re.I)),
+    ("telegram", re.compile(
+        r"@?([_+a-z0-9]+)[-\s]*(?:\(telegram|телеграм\))", flags=re.I)),
+    ("whatsapp", re.compile(
+        r"(?:whatsapp|вотсап|ватсап|вацап)[-:\s]*@?([-_+a-z0-9]+)",
+        flags=re.I)),
+    ("whatsapp", re.compile(
+        r"@?([-_+a-z0-9]+)[-\s]*(?:\(whatsapp|вотсап|ватсап|вацап\))",
+        flags=re.I)),
+]
 
 
 CATEGORIES = {
@@ -21,6 +38,23 @@ CATEGORIES = {
     "Transfer": "Transport",
     "Other Help": "Any help",
 }
+
+
+def extract_social(txt):
+    known = {}
+    unknown = []
+    for line in txt.splitlines():
+        found = None
+        for medium, pattern in SOCIAL_PATTERNS:
+            found = re.search(pattern, line)
+            if found:
+                value, = found.groups()
+                known[medium] = value
+        if not found:
+            if line.strip():
+                unknown.append(line.strip())
+
+    return known, unknown
 
 
 class MapaHelpSpider(scrapy.Spider):
@@ -40,8 +74,10 @@ class MapaHelpSpider(scrapy.Spider):
                 log.info("Point not published: %s", point["Name"])
                 continue
 
-            description = build_description(point)
-            yield {
+            known_social, unknown_social = extract_social(
+                point.get("SocialNetworks", ""))
+
+            poi = {
                 "country": point["Country"],
                 "name": point["Name"],
                 "city": "",
@@ -51,18 +87,15 @@ class MapaHelpSpider(scrapy.Spider):
                 "phone": point.get("Phone", ""),
                 "email": point.get("Email", ""),
                 "url": point.get("Website", ""),
+                "socialmedia": "\n".join(unknown_social),
                 "open_hours": point.get("WorkTime", ""),
                 "categories": [CATEGORIES.get(point["CategoryEn"],
                                               DEFAULT_CATEGORY)],
                 "organizations": [],
-                "description": "\n".join(description),
+                "description": point.get("Services", ""),
             }
 
+            for medium, value in known_social.items():
+                point[medium] = value
 
-def build_description(point):
-    description = []
-    if point.get("Services"):
-        description.append(point["Services"])
-    if point.get("SocialNetworks"):
-        description.append(f"Social networks: {point['SocialNetworks']}")
-    return description
+            yield poi

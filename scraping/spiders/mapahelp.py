@@ -15,12 +15,12 @@ SOCIAL_PATTERNS = [
     ("telegram", re.compile(
         r"(?:telegram|телеграм)[-:\s]*@?([_+a-z0-9]+)", flags=re.I)),
     ("telegram", re.compile(
-        r"@?([_+a-z0-9]+)[-\s]*(?:\(telegram|телеграм\))", flags=re.I)),
+        r"@?([_+a-z0-9]+)[-\s]*\((?:telegram|телеграм)\)", flags=re.I)),
     ("whatsapp", re.compile(
         r"(?:whatsapp|вотсап|ватсап|вацап)[-:\s]*@?([-_+a-z0-9]+)",
         flags=re.I)),
     ("whatsapp", re.compile(
-        r"@?([-_+a-z0-9]+)[-\s]*(?:\(whatsapp|вотсап|ватсап|вацап\))",
+        r"@?([-_+a-z0-9]+)[-\s]*\((?:whatsapp|вотсап|ватсап|вацап)\)",
         flags=re.I)),
 ]
 
@@ -50,6 +50,7 @@ def extract_social(txt):
             if found:
                 value, = found.groups()
                 known[medium] = value
+                break
         if not found:
             if line.strip():
                 unknown.append(line.strip())

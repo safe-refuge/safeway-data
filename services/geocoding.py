@@ -17,6 +17,10 @@ def make_geocode_request(address: str, gmaps):
     return gmaps.geocode(address)
 
 
+def make_reverse_geocode_request(lat: str, lng: str, gmaps):
+    return gmaps.reverse_geocode(f"{lat},{lng}")
+
+
 def init_google_maps(key):
     return googlemaps.Client(key=key)
 
@@ -27,7 +31,9 @@ class GeoCodingProcessor:
     # Injected dependencies
     settings: Settings
     log: Callable
+    gmaps: googlemaps.Client = None
     make_geocode_request: Callable = make_geocode_request
+    make_reverse_geocode_request: Callable = make_reverse_geocode_request
     init_google_maps: Callable = init_google_maps
 
     def enhance(self, entries: List[PointOfInterest]) -> List[PointOfInterest]:
@@ -37,7 +43,7 @@ class GeoCodingProcessor:
         """
 
         # Create client instance of gmaps
-        gmaps = self.init_google_maps(self.settings.developer_key)
+        self.gmaps = self.init_google_maps(self.settings.developer_key)
 
         addresses_to_geocode: Set[str] = {
             poi.address
@@ -52,7 +58,7 @@ class GeoCodingProcessor:
             reason = ""
             response = None
             try:
-                response = self.make_geocode_request(address, gmaps)
+                response = self.make_geocode_request(address, self.gmaps)
             except Exception as e:
                 reason = str(e)
 
@@ -70,4 +76,42 @@ class GeoCodingProcessor:
                 entry.lat = point.lat
                 entry.lng = point.lng
 
+            if not entry.lat or not entry.lng:
+                continue
+            if entry.country and entry.city and entry.address:
+                continue
+            self.enhance_by_reverse_lookup(entry)
+
         return entries
+
+    def enhance_by_reverse_lookup(self, entry: PointOfInterest):
+        try:
+            response = self.make_reverse_geocode_request(
+                entry.lat, entry.lng, self.gmaps)
+        except (googlemaps.exceptions.ApiError, googlemaps.exceptions.Timeout,
+                googlemaps.exceptions.TransportError) as e:
+            self.log(f"Reverse geocode: failed {entry.lat},{entry.lng}: {e}")
+
+        if not response:
+            self.log(f"Reverse geocode: got 0 results {entry.lat},{entry.lng}")
+        geodata = response[0]["address_components"]
+
+        if not entry.country:
+            entry.country = next(
+                r["long_name"] for r in geodata
+                if "country" in r["types"])
+
+        if not entry.city:
+            city_levels = {
+                "locality",
+                "administrative_area_level_1",
+                "administrative_area_level_2",
+            }
+            entry.city = next(
+                r["long_name"] for r in geodata
+                if city_levels & set(r["types"]))
+
+        if not entry.address:
+            entry.address = response[0]["formatted_address"]
+
+        return entry

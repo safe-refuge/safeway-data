@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List, Dict
+from typing import List, Dict, Mapping
 import requests
 import scrapy
 import json
@@ -8,6 +8,7 @@ from joblib import Memory
 
 from config.constants import DEFAULT_CATEGORY
 from config.settings import Settings
+from services.geocoding import Point
 
 memory = Memory(location='cache/poland_rjps')
 settings = Settings()
@@ -26,6 +27,7 @@ CATEGORY_MAPPING = {
 class PolandRJPSSpider(scrapy.Spider):
     name = "poland_rjps"
     DETAIL_BASE_URL = 'https://rjps.mpips.gov.pl/RJPS/WJ/wyszukiwanie/pobierzDaneJednostki.do?jednostkiIds'
+    coordinates: Mapping[str, Point] = {}
 
     def start_requests(self):
         data = {category: self._build_urls(category_ids) for category, category_ids in CATEGORY_MAPPING.items()}
@@ -44,7 +46,13 @@ class PolandRJPSSpider(scrapy.Spider):
     def _build_urls(self, category_ids: List[str]) -> List[str]:
         data = [self._fetch_point_ids_by_category(category_id_group) for category_id_group in category_ids]
         ids = [item for sublist in data for item in sublist]
-        return [f'{self.DETAIL_BASE_URL}={value["id"]}' for value in ids]
+        for item in ids:
+            point = Point(item['y'], item['x'])
+            self.coordinates.update({self._get_url_by_id(item['id']): point})
+        return [self._get_url_by_id(item['id']) for item in ids]
+
+    def _get_url_by_id(self, entity_id: str):
+        return f'{self.DETAIL_BASE_URL}={entity_id}'
 
     def _fetch_point_ids_by_category(self, category_id_group: str):
         return fetch_point_ids_by_category(category_id_group)
@@ -55,8 +63,8 @@ class PolandRJPSSpider(scrapy.Spider):
             'country': COUNTRY_NAME,
             'city': '',
             'address': self._get_address(response),
-            'lat': '',
-            'lng': '',
+            'lat': self.coordinates[response.url].lat,
+            'lng': self.coordinates[response.url].lng,
             'categories': [category or DEFAULT_CATEGORY],
             'organizations': ['Poland RJPS'],
             'description': self._get_description(response),

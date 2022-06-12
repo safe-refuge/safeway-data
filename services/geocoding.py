@@ -103,6 +103,7 @@ class GeoCodingProcessor:
 
         if not entry.city:
             city_levels = {
+                "locality",
                 "administrative_area_level_1",
                 "administrative_area_level_2",
             }

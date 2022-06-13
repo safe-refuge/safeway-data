@@ -12,7 +12,7 @@ DATA_PATH = f'tests/spiders/data/rips'
 def build_response_with_file(file_name: str) -> HtmlResponse:
     raw_text = open_read_only_file(f'{DATA_PATH}/{file_name}')
     body = '\n'.join(raw_text.readlines())
-    return HtmlResponse(body=body, encoding='utf-8', url='test.com')
+    return HtmlResponse(body=body, encoding='utf-8', url='https://test.com/?id=2321')
 
 
 @pytest.fixture
@@ -27,32 +27,32 @@ def missing_info_place():
 
 class TestPolandRJPSSpider:
     def test_parse_name(self, normal_place):
-        name = PolandRJPSSpider().parse(normal_place, category='test').get('name')
+        name = PolandRJPSSpider()._get_name(normal_place)
         assert name == 'Miejski Ośrodek Pomocy Społecznej w Zabłudowie'
 
     def test_parse_address(self, normal_place):
-        address = PolandRJPSSpider().parse(normal_place, category='test').get('address')
+        address = PolandRJPSSpider()._get_address(normal_place)
 
         assert address == '16-060 Zabłudów ul. Rynek 8'
 
     def test_parse_email(self, normal_place):
-        point = PolandRJPSSpider().parse(normal_place, category='test')
-        assert 'biuro@mops-zabludow.pl' == point.get('email')
+        email = PolandRJPSSpider()._get_email(normal_place)
+        assert 'biuro@mops-zabludow.pl' == email
 
     def test_parse_phone(self, normal_place):
-        point = PolandRJPSSpider().parse(normal_place, category='test')
-        assert 'tel. 85 7188100' == point.get('phone')
+        phone = PolandRJPSSpider()._get_phone(normal_place)
+        assert 'tel. 85 7188100' == phone
 
     def test_parse_website(self, normal_place):
-        point = PolandRJPSSpider().parse(normal_place, category='test')
-        assert 'http://bip.mops.um.zabludow.wrotapodlasia.pl' == point.get('url')
+        website = PolandRJPSSpider()._get_website(normal_place)
+        assert 'http://bip.mops.um.zabludow.wrotapodlasia.pl' == website
 
     def test_parse_update_date(self, normal_place):
-        description = PolandRJPSSpider().parse(normal_place, category='test').get('description')
+        description = PolandRJPSSpider()._get_description(normal_place)
         assert 'updated: 2018-02-05' in description
 
     def test_parse_missing_info_page(self, missing_info_place):
-        description = PolandRJPSSpider().parse(missing_info_place, category='test').get('description')
+        description = PolandRJPSSpider()._get_description(missing_info_place)
         assert 'updated: 2013-12-13' in description
 
     def get_spider(self):
@@ -69,6 +69,12 @@ class TestPolandRJPSSpider:
                 return mapping.get(category_id_group, [])
 
         return StubPolandRJPSSpider()
+
+    def test_get_geo_info(self, normal_place):
+        spider = self.get_spider()
+        spider._build_urls(['21,22,23,24,20,19'])
+        assert spider._get_lat(normal_place) == 52.55788
+        assert spider._get_lng(normal_place) == 18.59832
 
     def test_build_url_from_one_file(self):
         spider = self.get_spider()

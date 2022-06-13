@@ -63,8 +63,8 @@ class PolandRJPSSpider(scrapy.Spider):
             'country': COUNTRY_NAME,
             'city': '',
             'address': self._get_address(response),
-            'lat': self.coordinates[response.url].lat,
-            'lng': self.coordinates[response.url].lng,
+            'lat': self._get_lat(response),
+            'lng': self._get_lng(response),
             'categories': [category or DEFAULT_CATEGORY],
             'organizations': ['Poland RJPS'],
             'description': self._get_description(response),
@@ -83,6 +83,12 @@ class PolandRJPSSpider(scrapy.Spider):
     def _get_address(self, response):
         lines = response.css('div > div > div.flex.flex-column.justify-content-center span::text').getall()
         return ''.join(lines)
+
+    def _get_lat(self, response):
+        return self.coordinates.get(response.url).lat
+
+    def _get_lng(self, response):
+        return self.coordinates.get(response.url).lng
 
     def _get_description(self, response):
         rows = [

@@ -13,7 +13,6 @@ def fetch_translated_text(settings: Settings, text: List[str]):
 
 @dataclass
 class PointTranslator:
-
     # Injected dependencies
     settings: Settings
     fetch_translated_text: Callable = fetch_translated_text
@@ -30,13 +29,22 @@ class PointTranslator:
         translated_text = self.fetch_translated_text(self.settings, list(cities_to_translate))
         translations: Mapping[str, str] = dict(zip(cities_to_translate, translated_text))
 
+        translated_countries = self.get_mapping([poi.country for poi in entries])
+
         for entry in entries:
             original_city = entry.city
             entry.city = translations.get(original_city, None)
             if entry.city is None:
                 entry.city = cities_from_name_map.get(original_city, original_city)
 
+            original_country = entry.country
+            entry.country = translated_countries.get(original_country, original_country)
         return entries
+
+    def get_mapping(self, data: List[str]) -> Mapping[str, str]:
+        text_to_translate: Set[str] = set(data)
+        translated_text = self.fetch_translated_text(self.settings, list(text_to_translate))
+        return dict(zip(text_to_translate, translated_text))
 
     @staticmethod
     def _has_english_name(name: str) -> bool:

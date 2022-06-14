@@ -13,7 +13,7 @@ from googleapiclient.http import HttpRequest
 def point_of_interest():
     return PointOfInterest(
         name='The Ukrainian House',
-        country='Poland',
+        country='Polska',
         city='Warszawa',
         address='ul. Zamenhofa 1, 00-153',
         lat='50.847608',
@@ -44,10 +44,23 @@ def poi_with_city_in_english():
     )
 
 
+class TestGetMapping:
+    def test_normal_mapping(self):
+        data = ['Warszawa']
+        builder = PointTranslator(Settings(), stub_fetch_translated_text)
+        assert builder.get_mapping(data) == {'Warszawa': 'Warsaw'}
+
+    def test_combined_mapping(self):
+        data = ['Warszawa', 'Polska / Poland']
+        builder = PointTranslator(Settings(), stub_fetch_translated_text)
+        assert builder.get_mapping(data) == {'Warszawa': 'Warsaw', 'Polska': 'Poland'}
+
+
 def stub_fetch_translated_text(settings, text: List[str]) -> List[str]:
     mapping = {
         'Warszawa': 'Warsaw',
-        'Mladá Boleslav': 'Mlada Boleslav'}
+        'Mladá Boleslav': 'Mlada Boleslav',
+        'Polska': 'Poland'}
     return [mapping.get(t) for t in text]
 
 
@@ -70,6 +83,14 @@ class TestCityTranslator:
         enhanced: List[PointOfInterest] = result
         assert enhanced[0].city == 'Mlada Boleslav'
         assert enhanced[1].city == 'Warsaw'
+
+
+class TestCountryTranslator:
+    def test_translation(self, point_of_interest: PointOfInterest):
+        subject = PointTranslator(Settings(), stub_fetch_translated_text)
+        result = subject.translate([point_of_interest])
+        enhanced: PointOfInterest = result[0]
+        assert enhanced.country == 'Poland'
 
 
 def stub_build_request(service, multiple_texts: List[str]) -> HttpRequest:

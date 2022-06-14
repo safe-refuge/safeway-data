@@ -4,7 +4,7 @@ import pytest
 
 from config.settings import Settings
 from services.google_translate import BatchRequestsBuilder, GoogleTranslateReader
-from services.translation import CityTranslator
+from services.translation import PointTranslator
 from models.point_of_interest import PointOfInterest
 from googleapiclient.http import HttpRequest
 
@@ -53,19 +53,19 @@ def stub_fetch_translated_text(settings, text: List[str]) -> List[str]:
 
 class TestCityTranslator:
     def test_translation(self, point_of_interest: PointOfInterest):
-        subject = CityTranslator(Settings(), stub_fetch_translated_text)
+        subject = PointTranslator(Settings(), stub_fetch_translated_text)
         result = subject.translate([point_of_interest])
         enhanced: PointOfInterest = result[0]
         assert enhanced.city == 'Warsaw'
 
     def test_translation_with_english(self, poi_with_city_in_english: PointOfInterest):
-        subject = CityTranslator(Settings(), stub_fetch_translated_text)
+        subject = PointTranslator(Settings(), stub_fetch_translated_text)
         result = subject.translate([poi_with_city_in_english])
         enhanced: PointOfInterest = result[0]
         assert enhanced.city == 'Neculaieuca Kindergarten'
 
     def test_translations(self, point_of_interests: List[PointOfInterest]):
-        subject = CityTranslator(Settings(), stub_fetch_translated_text)
+        subject = PointTranslator(Settings(), stub_fetch_translated_text)
         result = subject.translate(point_of_interests)
         enhanced: List[PointOfInterest] = result
         assert enhanced[0].city == 'Mlada Boleslav'

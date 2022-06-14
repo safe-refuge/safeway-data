@@ -22,7 +22,7 @@ class ConvertSpreadsheetData(Injector):
     adapter = spreadsheet_adapter.SpreadsheetAdapter
     address_sanitizer = address_sanitizer.AddressSanitizer
     geocoder = geocoding.GeoCodingProcessor
-    translator = translation.CityTranslator
+    translator = translation.PointTranslator
     error_collector = error_collector.ErrorCollector
     validator = composite_validator.CompositeValidator
     validators = [RequiredFieldsValidator(), CategoriesValidator()]

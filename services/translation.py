@@ -12,7 +12,7 @@ def fetch_translated_text(settings: Settings, text: List[str]):
 
 
 @dataclass
-class CityTranslator:
+class PointTranslator:
 
     # Injected dependencies
     settings: Settings

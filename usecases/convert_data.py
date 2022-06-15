@@ -13,7 +13,7 @@ from repositories.csv import CSVRepository
 from services.address_sanitizer import AddressSanitizer
 from services.geocoding import GeoCodingProcessor
 from services.google_sheets import GoogleSheetsReader
-from services.translation import CityTranslator
+from services.translation import PointTranslator
 from validation.composite_validator import CompositeValidator
 from validation.error_collector import ErrorCollector
 
@@ -37,7 +37,7 @@ class ConvertSpreadsheetData:
     adapter: SpreadsheetAdapter
     address_sanitizer: AddressSanitizer    
     geocoder: GeoCodingProcessor
-    translator: CityTranslator
+    translator: PointTranslator
     error_collector: ErrorCollector
     validator: CompositeValidator
     csv_repository: CSVRepository

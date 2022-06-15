@@ -64,7 +64,8 @@ def fake_init_google_maps(key):
 def stub_fetch_translated_text(settings, text: List[str]) -> List[str]:
     mapping = {
         'Warszawa': 'Warsaw',
-        'Mladá Boleslav': 'Mlada Boleslav'}
+        'Mladá Boleslav': 'Mlada Boleslav',
+        'Poland': 'Poland'}
     return [mapping.get(t) for t in text]
 
 

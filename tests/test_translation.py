@@ -46,14 +46,14 @@ def poi_with_city_in_english():
 
 class TestGetMapping:
     def test_normal_mapping(self):
-        data = ['Warszawa']
+        data = {'Warszawa'}
         builder = PointTranslator(Settings(), stub_fetch_translated_text)
         assert builder.get_mapping(data) == {'Warszawa': 'Warsaw'}
 
     def test_combined_mapping(self):
-        data = ['Warszawa', 'Polska / Poland']
+        data = {'Warszawa', 'Polska / Poland'}
         builder = PointTranslator(Settings(), stub_fetch_translated_text)
-        assert builder.get_mapping(data) == {'Warszawa': 'Warsaw', 'Polska': 'Poland'}
+        assert builder.get_mapping(data) == {'Warszawa': 'Warsaw', 'Polska / Poland': 'Poland'}
 
 
 def stub_fetch_translated_text(settings, text: List[str]) -> List[str]:

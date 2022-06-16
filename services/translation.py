@@ -1,11 +1,18 @@
+import html
 from dataclasses import dataclass
 from typing import List, Mapping, Set, Callable
+
+from joblib import Memory
 
 from config.settings import Settings
 from models.point_of_interest import PointOfInterest
 from services.google_translate import GoogleTranslateReader
 
 
+memory = Memory(location='cache/translation')
+
+
+@memory.cache(ignore=["settings"])
 def fetch_translated_text(settings: Settings, text: List[str]):
     result = GoogleTranslateReader(settings=settings).translate(text)
     return result
@@ -16,6 +23,7 @@ class PointTranslator:
     # Injected dependencies
     settings: Settings
     fetch_translated_text: Callable = fetch_translated_text
+    log: Callable = print
 
     def translate(self, entries: List[PointOfInterest]) -> List[PointOfInterest]:
         """
@@ -27,10 +35,11 @@ class PointTranslator:
 
         for entry in entries:
             original_city = entry.city
-            entry.city = cities_translated_map.get(original_city, original_city)
+            entry.city = self._get_translation(original_city, cities_translated_map)
 
             original_country = entry.country
-            entry.country = countries_translated_map.get(original_country, original_country)
+            entry.country = self._get_translation(original_country, countries_translated_map)
+
         return entries
 
     def get_mapping(self, data: Set[str]) -> Mapping[str, str]:
@@ -45,6 +54,7 @@ class PointTranslator:
 
     def _get_translated_mapping(self, data: Set[str]) -> Mapping[str, str]:
         translated_text = self.fetch_translated_text(self.settings, list(data))
+        self.log(f"Translated {len(data)} entries")
         return dict(zip(data, translated_text))
 
     @staticmethod
@@ -58,3 +68,12 @@ class PointTranslator:
             org, eng = name.split('/')
             result[name] = eng.strip()
         return result
+
+    @staticmethod
+    def _get_translation(original: str, translated_map: Mapping[str, str]) -> str:
+        translation = translated_map.get(original)
+        translation_has_as_many_words_as_original = translation and \
+                                                    len(translation.split()) == len(original.split("/")[0].split())
+        if translation_has_as_many_words_as_original:
+            return html.unescape(translation)
+        return original

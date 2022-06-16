@@ -88,7 +88,7 @@ def test_spreadsheet_data_conversion():
         '"Monday:        09:00–19:00\nTuesday:       09:00–19:00\n' \
         'Wednesday:       09:00–19:00\nThursday:       09:00–19:00\n' \
         'Friday:       09:00–19:00\nSaturday:        09:00–17:00\n' \
-        'Sunday:       Closed\n",,,True,True'
+        'Sunday:       Closed\n",,,False,'
 
     # TODO: verify city translation
 

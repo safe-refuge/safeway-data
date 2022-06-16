@@ -1,10 +1,15 @@
 from dataclasses import dataclass
-from typing import Callable, List, Mapping, Set
+from typing import Callable, List, Mapping, Set, Generator, Optional
 
 import googlemaps
+from joblib import Memory
 
 from config.settings import Settings
 from models.point_of_interest import PointOfInterest
+
+
+memory = Memory(location='cache/geocoding')
+IGNORED_FOR_CACHING = ["gmaps"]
 
 
 @dataclass
@@ -13,16 +18,25 @@ class Point:
     lng: str
 
 
+@memory.cache(ignore=IGNORED_FOR_CACHING)
 def make_geocode_request(address: str, gmaps):
     return gmaps.geocode(address)
 
 
+@memory.cache(ignore=IGNORED_FOR_CACHING)
 def make_reverse_geocode_request(lat: str, lng: str, gmaps):
     return gmaps.reverse_geocode(f"{lat},{lng}")
 
 
 def init_google_maps(key):
     return googlemaps.Client(key=key)
+
+
+def _get_first_value(generator: Generator) -> Optional[str]:
+    try:
+        return next(generator)
+    except StopIteration:
+        return
 
 
 @dataclass
@@ -96,13 +110,12 @@ class GeoCodingProcessor:
             self.log(f"Reverse geocode: got 0 results {entry.lat},{entry.lng}")
 
         geodata = response[0]["address_components"]
-        address = ', '.join([g['short_name'] for g in geodata])
+        address = response[0]["formatted_address"]
         self.log(f"Reverse geocode result for {entry.lat},{entry.lng} = {address}")
 
         if not entry.country:
-            entry.country = next(
-                r["long_name"] for r in geodata
-                if "country" in r["types"])
+            if country := _get_first_value(r["long_name"] for r in geodata if "country" in r["types"]):
+                entry.country = country
 
         if not entry.city:
             city_levels = {
@@ -111,11 +124,9 @@ class GeoCodingProcessor:
                 "administrative_area_level_2",
                 "administrative_area_level_3",
             }
-            entry.city = next(
-                r["long_name"] for r in geodata
-                if city_levels & set(r["types"]))
+            if city := _get_first_value(r["long_name"] for r in geodata if city_levels & set(r["types"])):
+                entry.city = city
 
-        if not entry.address:
-            entry.address = response[0]["formatted_address"]
+        entry.address = entry.address or address
 
         return entry

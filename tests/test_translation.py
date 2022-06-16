@@ -34,7 +34,7 @@ def poi_with_city_in_english():
     return PointOfInterest(
         name='Dondușeni',
         country='',
-        city='satul Neculaieuca (Grădinița Neculaieuca )/ Neculaieuca Kindergarten ',
+        city='satul Neculaieuca/ Neculaieuca Kindergarten ',
         address='or. Dondușeni, str. Ștefan cel Mare, 30 (could not locate on Google maps)',
         lat='',
         lng='',

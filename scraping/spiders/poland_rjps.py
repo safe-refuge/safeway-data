@@ -66,7 +66,7 @@ class PolandRJPSSpider(scrapy.Spider):
             'lat': self._get_lat(response),
             'lng': self._get_lng(response),
             'categories': [category or DEFAULT_CATEGORY],
-            'organizations': ['Poland RJPS'],
+            'organizations': [],
             'description': self._get_description(response),
             'phone': self._get_phone(response),
             'email': self._get_email(response),

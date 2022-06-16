@@ -30,6 +30,10 @@ class TestPolandRJPSSpider:
         name = PolandRJPSSpider()._get_name(normal_place)
         assert name == 'Miejski Ośrodek Pomocy Społecznej w Zabłudowie'
 
+    def test_parse_organization(self, normal_place):
+        name = PolandRJPSSpider()._get_organization(normal_place)
+        assert name == 'Ośrodek pomocy społecznej'
+
     def test_parse_address(self, normal_place):
         address = PolandRJPSSpider()._get_address(normal_place)
 

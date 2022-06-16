@@ -66,7 +66,7 @@ class PolandRJPSSpider(scrapy.Spider):
             'lat': self._get_lat(response),
             'lng': self._get_lng(response),
             'categories': [category or DEFAULT_CATEGORY],
-            'organizations': ['Poland RJPS'],
+            'organizations': self._get_organization(response),
             'description': self._get_description(response),
             'phone': self._get_phone(response),
             'email': self._get_email(response),
@@ -75,6 +75,10 @@ class PolandRJPSSpider(scrapy.Spider):
 
     def _get_name(self, response):
         raw = response.css('h3.nazwa a::text').get()
+        return self._clean_spaces(raw)
+
+    def _get_organization(self, response):
+        raw = response.css('div[title="Typ jednostki"] > span::text').get()
         return self._clean_spaces(raw)
 
     def _clean_spaces(self, data):

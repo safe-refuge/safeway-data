@@ -22,4 +22,3 @@ class CompositeValidator:
                 self.error_collector.add(point)
 
         return valid_points
-

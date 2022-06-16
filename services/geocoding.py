@@ -94,7 +94,10 @@ class GeoCodingProcessor:
 
         if not response:
             self.log(f"Reverse geocode: got 0 results {entry.lat},{entry.lng}")
+
         geodata = response[0]["address_components"]
+        address = ', '.join([g['short_name'] for g in geodata])
+        self.log(f"Reverse geocode result for {entry.lat},{entry.lng} = {address}")
 
         if not entry.country:
             entry.country = next(

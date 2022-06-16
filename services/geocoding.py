@@ -109,6 +109,7 @@ class GeoCodingProcessor:
                 "locality",
                 "administrative_area_level_1",
                 "administrative_area_level_2",
+                "administrative_area_level_3",
             }
             entry.city = next(
                 r["long_name"] for r in geodata

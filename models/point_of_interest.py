@@ -39,6 +39,10 @@ class PointOfInterest(BaseModel):
     def sanitize_description(cls, description: str) -> str:
         return sanitize_value(description)
 
+    @validator('city', pre=True)
+    def sanitize_city(cls, city: str) -> str:
+        return sanitize_value(city)
+
     @validator('categories', pre=True)
     def ensure_categories_as_list(cls, categories: Any) -> List[str]:
         return _convert_to_list(categories)

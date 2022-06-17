@@ -3,10 +3,12 @@ from collections import OrderedDict
 import pytest
 from scrapy.http import HtmlResponse
 
+from config import PROJECT_PATH
 from repositories.csv import open_read_only_file
 from scraping.spiders.poland_rjps import PolandRJPSSpider, CategoryHandler
 
-DATA_PATH = f'tests/spiders/data/rips'
+
+DATA_PATH = f'{PROJECT_PATH}/tests/spiders/data/rips'
 
 
 def build_response_with_file(file_name: str) -> HtmlResponse:

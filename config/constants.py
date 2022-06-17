@@ -17,7 +17,11 @@ CATEGORIES: Set[str] = {
     'Social help',
     'Any help',
     'Disability support',
-    'Pets'
+    'Pets',
+    'Water',
+    'Jobs',
+    'Education',
+    'LGBTQ+'
 }
 
 DEFAULT_CATEGORY: str = 'Any help'

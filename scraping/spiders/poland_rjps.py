@@ -12,6 +12,7 @@ from services.geocoding import Point
 from utils.phone_numbers import PolandPhoneNumberExtractorService
 
 
+
 memory = Memory(location='cache/poland_rjps')
 settings = Settings()
 COUNTRY_NAME = 'Poland'

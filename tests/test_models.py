@@ -11,3 +11,4 @@ def test_point_of_interest_validation():
     assert point.categories == ['Accommodation', 'Medical']
     assert point.organizations == ['Domomoga Moldova']
     assert point.city == "Anenii' Noi"
+

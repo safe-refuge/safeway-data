@@ -2,6 +2,7 @@ from typing import List, Any
 
 from pydantic import BaseModel, validator
 
+from validation.urls import sanitise_url
 from validation import sanitize_value
 
 
@@ -43,6 +44,10 @@ class PointOfInterest(BaseModel):
     @validator('organizations', pre=True)
     def ensure_organizations_as_list(cls, organizations: Any) -> List[str]:
         return _convert_to_list(organizations)
+
+    @validator('url', pre=True)
+    def sanitize_url(cls, url: str) -> str:
+        return sanitise_url(url)
 
 
 def _convert_to_list(value: Any) -> List[str]:

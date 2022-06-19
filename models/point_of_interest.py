@@ -2,7 +2,7 @@ from typing import List, Any
 
 from pydantic import BaseModel, validator
 
-from utils.urls import sanitise_url
+from validation.urls import sanitise_url
 from validation import sanitize_value
 
 

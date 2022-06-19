@@ -1,8 +1,16 @@
-[![CI](https://github.com/littlepea/safeway-data/actions/workflows/test.yml/badge.svg)](https://github.com/littlepea/safeway-data/actions/workflows/test.yml)
+[![CI](https://github.com/safe-refuge/safeway-data/actions/workflows/test.yml/badge.svg)](https://github.com/safe-refuge/safeway-data/actions/workflows/test.yml)
 
 # safeway-data
 
 Data mining tools for Safeway app.
+
+## Overview
+
+A team of volunteers is building an app for refugees to find help in Europe and avoid human trafficking. It's a project that will have a big impact and save lives. 🇺🇦
+
+The app development is done, we need to load more data about helping points into the app.
+Volunteers collected a lot of points into a spreadsheet and we've written a tool in Python to convert it into a CSV format suitable for importing into the app database.
+But there are still some enhancements to the data pipeline and new web scraping spiders needed.
 
 ## Installation
 

@@ -1,6 +1,8 @@
-import html
 from typing import List, Any
+
 from pydantic import BaseModel, validator
+
+from validation import sanitize_value
 
 
 class PointOfInterest(BaseModel):
@@ -28,7 +30,11 @@ class PointOfInterest(BaseModel):
 
     @validator('city', pre=True)
     def sanitize_city(cls, city: str) -> str:
-        return _sanitize(city)
+        return sanitize_value(city)
+
+    @validator('description', pre=True)
+    def sanitize_description(cls, description: str) -> str:
+        return sanitize_value(description)
 
     @validator('categories', pre=True)
     def ensure_categories_as_list(cls, categories: Any) -> List[str]:
@@ -43,7 +49,3 @@ def _convert_to_list(value: Any) -> List[str]:
     if isinstance(value, str):
         return value.split(',')
     return value
-
-
-def _sanitize(value: str) -> str:
-    return html.unescape(value)

@@ -1,9 +1,8 @@
 import html
-import re
 from typing import List, Any
 from pydantic import BaseModel, validator
 
-from models.constants import DEFAULT_URL_PROTOCOLS, DEFAULT_URL_SCHEMES, URL_REGEX, MARKDOWN_URL_REGEX
+from utils.urls import sanitise_url
 
 
 class PointOfInterest(BaseModel):
@@ -43,25 +42,7 @@ class PointOfInterest(BaseModel):
 
     @validator('url', pre=True)
     def sanitize_url(cls, url: str) -> str:
-        org_url = url
-        if len(url.split('.')) < 3 and url.startswith('www') or '@' in url:
-            return ''
-
-        markdown_url = re.compile(MARKDOWN_URL_REGEX).search(url)
-        if markdown_url:
-            url = markdown_url.groups()[0]
-
-        valid_url = re.compile(URL_REGEX, re.IGNORECASE).search(url)
-        if valid_url:
-            _url = valid_url.groups()[0]
-            if all([scheme not in _url for scheme in DEFAULT_URL_SCHEMES]):
-                url = DEFAULT_URL_PROTOCOLS + url
-
-            not_start_with_http = re.search('(http.*)$', _url)
-            if not_start_with_http:
-                url = not_start_with_http.groups()[0]
-
-        return url
+        return sanitise_url(url)
 
 
 def _convert_to_list(value: Any) -> List[str]:

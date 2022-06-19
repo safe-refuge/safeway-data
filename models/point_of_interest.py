@@ -3,7 +3,7 @@ import re
 from typing import List, Any
 from pydantic import BaseModel, validator
 
-from models.constants import DEFAULT_URL_PROTOCOLS, DEFAULT_URL_SCHEMES
+from models.constants import DEFAULT_URL_PROTOCOLS, DEFAULT_URL_SCHEMES, URL_REGEX, MARKDOWN_URL_REGEX
 
 
 class PointOfInterest(BaseModel):
@@ -47,14 +47,11 @@ class PointOfInterest(BaseModel):
         if len(url.split('.')) < 3 and url.startswith('www') or '@' in url:
             return ''
 
-        markdown_url = re.search('\[.*\]\((.*)\)', url)
+        markdown_url = re.compile(MARKDOWN_URL_REGEX).search(url)
         if markdown_url:
             url = markdown_url.groups()[0]
 
-        regex_url = re.compile(
-            r'([(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))',
-            re.IGNORECASE)
-        valid_url = regex_url.search(url)
+        valid_url = re.compile(URL_REGEX, re.IGNORECASE).search(url)
         if valid_url:
             _url = valid_url.groups()[0]
             if all([scheme not in _url for scheme in DEFAULT_URL_SCHEMES]):

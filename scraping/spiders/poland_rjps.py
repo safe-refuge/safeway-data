@@ -14,6 +14,7 @@ from services.geocoding import Point
 memory = Memory(location='cache/poland_rjps')
 settings = Settings()
 COUNTRY_NAME = 'Poland'
+PHONE_COUNTRY_CODE = '+48'
 
 
 CATEGORY_MAPPING = {
@@ -102,7 +103,9 @@ class PolandRJPSSpider(scrapy.Spider):
         return response.css('div[title=Email] > div > div::text').get() or ''
 
     def _get_phone(self, response):
-        return response.css('div[title=Telefon] > div > span.wrap-anywhere::text').get() or ''
+        raw = response.css('div[title=Telefon] > div > span.wrap-anywhere::text').get() or ''
+        phone = raw.replace('tel. ', '')
+        return f'{PHONE_COUNTRY_CODE} {phone}' if phone else raw
 
     def _get_website(self, response):
         url = response.css('div[title="Strona www"] > div > div::text').get() or ''

@@ -43,7 +43,8 @@ class TestPolandRJPSSpider:
 
     def test_parse_phone(self, normal_place):
         phone = PolandRJPSSpider()._get_phone(normal_place)
-        assert 'tel. 85 7188100' == phone
+        assert '+48 85 7188100' == phone
+
 
     def test_parse_website(self, normal_place):
         website = PolandRJPSSpider()._get_website(normal_place)

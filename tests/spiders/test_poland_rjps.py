@@ -7,7 +7,6 @@ from config import PROJECT_PATH
 from repositories.csv import open_read_only_file
 from scraping.spiders.poland_rjps import PolandRJPSSpider, CategoryHandler
 
-
 DATA_PATH = f'{PROJECT_PATH}/tests/spiders/data/rips'
 
 
@@ -43,8 +42,15 @@ class TestPolandRJPSSpider:
 
     def test_parse_phone(self, normal_place):
         phone = PolandRJPSSpider()._get_phone(normal_place)
-        assert '+48 85 7188100' == phone
+        assert ['+48 857188100'] == phone
 
+    @pytest.mark.parametrize('origin, expected', [
+        ('tel. 85 7188100', ['+48 857188100']),
+        ('24 356 22 02  024 356 29 09', ['+48 243562202', '+48 243562909'])
+    ])
+    def test_clean_phone(self, origin, expected):
+        real = PolandRJPSSpider()._clean_phone(origin)
+        assert real == expected
 
     def test_parse_website(self, normal_place):
         website = PolandRJPSSpider()._get_website(normal_place)

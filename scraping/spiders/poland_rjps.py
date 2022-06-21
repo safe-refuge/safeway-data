@@ -9,13 +9,12 @@ from joblib import Memory
 from config.constants import DEFAULT_CATEGORY
 from config.settings import Settings
 from services.geocoding import Point
-
+from tests.utils import PolandPhoneNumberExtractorService
 
 memory = Memory(location='cache/poland_rjps')
 settings = Settings()
 COUNTRY_NAME = 'Poland'
 PHONE_COUNTRY_CODE = '+48'
-
 
 CATEGORY_MAPPING = {
     'Medical': ['21,22,23,24,20,19', '25,26,27,28,29,30'],
@@ -104,8 +103,11 @@ class PolandRJPSSpider(scrapy.Spider):
 
     def _get_phone(self, response):
         raw = response.css('div[title=Telefon] > div > span.wrap-anywhere::text').get() or ''
-        phone = raw.replace('tel. ', '')
-        return f'{PHONE_COUNTRY_CODE} {phone}' if phone else raw
+        return self._clean_phone(raw)
+
+    def _clean_phone(self, phone: str) -> List[str]:
+        service = PolandPhoneNumberExtractorService(phone)
+        return service.get_phone_number_in_e164()
 
     def _get_website(self, response):
         url = response.css('div[title="Strona www"] > div > div::text').get() or ''

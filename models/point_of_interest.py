@@ -3,6 +3,7 @@ from typing import List, Any
 from pydantic import BaseModel, validator
 
 from validation.urls import sanitise_url
+from validation.phones import sanitise_phone
 from validation import sanitize_value
 
 
@@ -48,6 +49,10 @@ class PointOfInterest(BaseModel):
     @validator('url', pre=True)
     def sanitize_url(cls, url: str) -> str:
         return sanitise_url(url)
+
+    @validator('phone', pre=True)
+    def sanitize_phone(cls, phone: str) -> str:
+        return sanitise_phone(phone)
 
 
 def _convert_to_list(value: Any) -> List[str]:

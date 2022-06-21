@@ -1,5 +1,4 @@
-import re
-from typing import Tuple
+from validation.utils import get_first_found_or_none
 
 URL_REGEX = r'([(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))'
 MARKDOWN_URL_REGEX = r'\[.*\]\((.*)\)'
@@ -31,8 +30,4 @@ def sanitise_url(url: str) -> str:
 
     return url
 
-
-def get_first_found_or_none(regex: str, text: str) -> Tuple[bool, str]:
-    matched = re.compile(regex).search(text)
-    return (True, matched.groups()[0],) if matched else (False, '',)
 

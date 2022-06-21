@@ -10,5 +10,5 @@ def sanitise_phone(phone: str) -> str:
             return phonenumbers.format_number(_phone, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
     except NumberParseException:
         pass
-    return f'Error: {phone}'  # TODO: return ''
+    return ''
 

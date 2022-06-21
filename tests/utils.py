@@ -35,14 +35,9 @@ class PhoneNumberExtractorService:
         digits = [digit for digit in list(origin) if digit in '0123456789']
         return ''.join(list(digits))
 
-    def _get_phone_numbers(self, origin) -> List[str]:
-        return [phone for phone in
-                get_phone_numbers(list(origin), self.INTERNAL_NUMBER_LENGTH)
-                if phone]
-
     def get_phone_number_in_e164(self):
         digits = self._get_digits(self.raw_phone)
-        phones = self._get_phone_numbers(digits)
+        phones = get_phone_numbers(digits, self.INTERNAL_NUMBER_LENGTH)
         return list(map(lambda phone: f'{self.COUNTRY_CODE} {phone}', phones))
 
 
@@ -51,10 +46,10 @@ class PolandPhoneNumberExtractorService(PhoneNumberExtractorService):
     COUNTRY_CODE = '+48'
 
 
-def get_phone_numbers(origin: List[str], internal_number_length) -> List[str]:
+def get_phone_numbers(origin: str, internal_number_length) -> List[str]:
     _origin = list(origin)
     if len(_origin) < internal_number_length:
-        return ['']  # TODO: could be pass to keep '' out of in return
+        return []
 
     if len(_origin) == internal_number_length:
         return [''.join(origin)]

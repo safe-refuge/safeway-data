@@ -54,7 +54,7 @@ class PolandPhoneNumberExtractorService(PhoneNumberExtractorService):
 def get_phone_numbers(origin: List[str], internal_number_length) -> List[str]:
     _origin = list(origin)
     if len(_origin) < internal_number_length:
-        return ['']
+        return ['']  # TODO: could be pass to keep '' out of in return
 
     if len(_origin) == internal_number_length:
         return [''.join(origin)]
@@ -65,5 +65,6 @@ def get_phone_numbers(origin: List[str], internal_number_length) -> List[str]:
     else:
         left = _origin[:internal_number_length]
         right = _origin[internal_number_length:]
-    return get_phone_numbers(''.join(left), internal_number_length) + get_phone_numbers(''.join(right),
-                                                                                        internal_number_length)
+    return get_phone_numbers(''.join(left), internal_number_length) + \
+           get_phone_numbers(''.join(right), internal_number_length)
+# TODO: move into utils/phone_numbers.py

@@ -80,3 +80,5 @@ def test_url_validation(origin, expected):
 def test_phone_validation(origin, expected):
     real = sanitise_phone(origin)
     assert real == expected
+
+# TODO: return '' instead of 'Error: +48 54285...'

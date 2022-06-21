@@ -14,7 +14,6 @@ from tests.utils import PolandPhoneNumberExtractorService
 memory = Memory(location='cache/poland_rjps')
 settings = Settings()
 COUNTRY_NAME = 'Poland'
-PHONE_COUNTRY_CODE = '+48'
 
 CATEGORY_MAPPING = {
     'Medical': ['21,22,23,24,20,19', '25,26,27,28,29,30'],

@@ -1,4 +1,4 @@
-from validation.utils import get_first_found_or_none
+from validation.utils import get_first_match_or_empty
 
 URL_REGEX = r'([(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))'
 MARKDOWN_URL_REGEX = r'\[.*\]\((.*)\)'
@@ -17,16 +17,16 @@ def sanitise_url(url: str) -> str:
             or EMAIL_CHAR in url:
         return ''
 
-    markdown_url, url_in_markdown = get_first_found_or_none(MARKDOWN_URL_REGEX, url)
-    url = url_in_markdown if markdown_url else url
+    url_in_markdown = get_first_match_or_empty(MARKDOWN_URL_REGEX, url)
+    url = url_in_markdown if url_in_markdown else url
 
-    valid_url, _url = get_first_found_or_none(URL_REGEX, url)
-    if valid_url:
+    _url = get_first_match_or_empty(URL_REGEX, url)
+    if _url:
         if all([scheme not in _url for scheme in DEFAULT_URL_SCHEMES]):
             url = DEFAULT_URL_PROTOCOLS + _url
 
-        not_start_with_http, url_in_text = get_first_found_or_none(HTTP_URL_REGEX, _url)
-        url = url_in_text if not_start_with_http else url
+        url_in_text = get_first_match_or_empty(HTTP_URL_REGEX, _url)
+        url = url_in_text if url_in_text else url
 
     return url
 

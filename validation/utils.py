@@ -2,6 +2,6 @@ import re
 from typing import Tuple
 
 
-def get_first_found_or_none(regex: str, text: str) -> Tuple[bool, str]:
+def get_first_match_or_empty(regex: str, text: str) -> str:
     matched = re.compile(regex).search(text)
-    return (True, matched.groups()[0],) if matched else (False, '',)
+    return matched.groups()[0] if matched else ''

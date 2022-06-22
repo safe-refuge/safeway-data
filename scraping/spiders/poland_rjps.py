@@ -9,7 +9,7 @@ from joblib import Memory
 from config.constants import DEFAULT_CATEGORY
 from config.settings import Settings
 from services.geocoding import Point
-from tests.utils import PolandPhoneNumberExtractorService
+from utils.phone_numbers import PolandPhoneNumberExtractorService
 
 memory = Memory(location='cache/poland_rjps')
 settings = Settings()

@@ -1,6 +1,6 @@
 import pytest
 
-from tests.utils import PolandPhoneNumberExtractorService, get_phone_numbers
+from utils.phone_numbers import PolandPhoneNumberExtractorService, get_phone_numbers
 
 
 class TestPhoneNumberExtractorService:
@@ -39,6 +39,3 @@ class TestPhoneNumberExtractorService:
     ])
     def test_extract_phone_numbers(self, origin, expected):
         assert get_phone_numbers(origin, 9) == expected
-
-# TODO: edge case
-# ('17 7445715 7445717 7445756', '17 7445715 17 7445717 17 7445756'),

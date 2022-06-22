@@ -41,15 +41,17 @@ class TestPolandRJPSSpider:
         assert 'biuro@mops-zabludow.pl' == email
 
     def test_parse_phone(self, normal_place):
-        phone = PolandRJPSSpider()._get_phone(normal_place)
-        assert ['+48 857188100'] == phone
+        spider = self.get_spider()
+        phone = spider._get_phone(normal_place)
+        assert phone == '+48 857188100'
 
     @pytest.mark.parametrize('origin, expected', [
-        ('tel. 85 7188100', ['+48 857188100']),
-        ('24 356 22 02  024 356 29 09', ['+48 243562202', '+48 243562909'])
+        ('tel. 85 7188102', '+48 857188102'),
+        ('24 356 22 02  024 356 29 09', '+48 243562202')
     ])
     def test_clean_phone(self, origin, expected):
-        real = PolandRJPSSpider()._clean_phone(origin)
+        spider = self.get_spider()
+        real = spider._clean_phone(origin)
         assert real == expected
 
     def test_parse_website(self, normal_place):
@@ -64,9 +66,16 @@ class TestPolandRJPSSpider:
         description = PolandRJPSSpider()._get_description(missing_info_place)
         assert 'updated: 2013-12-13' in description
 
+    def test_more_phones_added_in_description(self, normal_place):
+        spider = self.get_spider()
+        spider._get_phone(normal_place)
+        description = spider._get_description(normal_place)
+        assert description == 'Other phone numbers: +48 857188118\nupdated: 2018-02-05'
+
     def get_spider(self):
         class StubPolandRJPSSpider(PolandRJPSSpider):
             DETAIL_BASE_URL = 'https://test.com/?id'
+            descriptions = []
 
             def _fetch_point_ids_by_category(self, category_id_group):
                 mapping = {

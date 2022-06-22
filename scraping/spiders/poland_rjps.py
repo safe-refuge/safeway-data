@@ -9,12 +9,11 @@ from joblib import Memory
 from config.constants import DEFAULT_CATEGORY
 from config.settings import Settings
 from services.geocoding import Point
-
+from utils.phone_numbers import PolandPhoneNumberExtractorService
 
 memory = Memory(location='cache/poland_rjps')
 settings = Settings()
 COUNTRY_NAME = 'Poland'
-
 
 CATEGORY_MAPPING = {
     'Medical': ['21,22,23,24,20,19', '25,26,27,28,29,30'],
@@ -30,6 +29,7 @@ class PolandRJPSSpider(scrapy.Spider):
     name = "poland_rjps"
     DETAIL_BASE_URL = 'https://rjps.mpips.gov.pl/RJPS/WJ/wyszukiwanie/pobierzDaneJednostki.do?jednostkiIds'
     coordinates: Mapping[str, Point] = {}
+    descriptions: List[str] = []
 
     def start_requests(self):
         data = {category: self._build_urls(category_ids) for category, category_ids in CATEGORY_MAPPING.items()}
@@ -69,8 +69,8 @@ class PolandRJPSSpider(scrapy.Spider):
             'lng': self._get_lng(response),
             'categories': [category or DEFAULT_CATEGORY],
             'organizations': [],
-            'description': self._get_description(response),
             'phone': self._get_phone(response),
+            'description': self._get_description(response),
             'email': self._get_email(response),
             'url': self._get_website(response),
         }
@@ -93,16 +93,22 @@ class PolandRJPSSpider(scrapy.Spider):
         return self.coordinates.get(response.url).lng
 
     def _get_description(self, response):
-        rows = [
-            self._get_update_date(response),
-        ]
-        return '\n'.join(map(self._clean_spaces, rows))
+        self.descriptions.append(self._get_update_date(response))
+        return '\n'.join(map(self._clean_spaces, self.descriptions))
 
     def _get_email(self, response):
         return response.css('div[title=Email] > div > div::text').get() or ''
 
     def _get_phone(self, response):
-        return response.css('div[title=Telefon] > div > span.wrap-anywhere::text').get() or ''
+        raw = response.css('div[title=Telefon] > div > span.wrap-anywhere::text').get() or ''
+        return self._clean_phone(raw)
+
+    def _clean_phone(self, phone: str) -> str:
+        service = PolandPhoneNumberExtractorService(phone)
+        phones = service.get_phone_number_in_e164()
+        if len(phones) > 1:
+            self.descriptions.append(f'Other phone numbers: {", ".join(phones[1:])}')
+        return phones[0]
 
     def _get_website(self, response):
         url = response.css('div[title="Strona www"] > div > div::text').get() or ''

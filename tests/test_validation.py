@@ -3,6 +3,7 @@ import pytest
 from models.point_of_interest import PointOfInterest
 from validation import RequiredFieldsValidator
 from validation.categories import CategoriesValidator
+from validation.phones import sanitise_phone
 from validation.urls import sanitise_url
 
 
@@ -53,4 +54,29 @@ def test_invalid_category(complete_point_of_interest):
      'https://sac.mpips.gov.pl:8443/Pomost/CKEditorServlet?TRYB=2')])
 def test_url_validation(origin, expected):
     real = sanitise_url(origin)
+    assert real == expected
+
+
+@pytest.mark.parametrize('origin,expected', [
+    ('+48 542851327', '+48 54 285 13 27'),
+    ('+48 81 5666060', '+48 81 566 60 60'),
+    ('+48 56 678 12 12', '+48 56 678 12 12'),
+    ('+48 054-2842-252', '+48 0542842252'),
+    ('+48 54 230-53-47', '+48 54 230 53 47'),
+    ('+48 (0 44) 616 11 60', '+48 0446161160'),
+    ('+48 044 7102368', '+48 0447102368'),
+    ('+48 (14) 671-31-20', '+48 14 671 31 20'),
+    ('+48 (0-24)', ''),
+    ('+48 24 356 22 02  024 356 29 09', ''),
+    ('+48 468302636\n468302648\n46 830', ''),
+    ('+48 29 752-25-14   118', ''),
+    ('+48 14 6761067       146761140', ''),
+    ('+48 17 7445715 7445717 7445756', ''),
+    ('+48 (15) 8643058, (15) 8665099', ''),
+    ('+48 25 781 60 74, 25 787 73 50', ''),
+    ('+48 22 510 98 03-19 foo', ''),
+    ('foo +48 22 510 98 03-19 bar', ''),
+    ('542851327', '')])
+def test_phone_validation(origin, expected):
+    real = sanitise_phone(origin)
     assert real == expected

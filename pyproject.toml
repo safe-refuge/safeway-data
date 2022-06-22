@@ -22,6 +22,7 @@ Scrapy = "^2.6.1"
 betamax = "^0.8.1"
 joblib = "^1.1.0"
 hjson = "^3.0.2"
+phonenumbers = "^8.12.50"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"

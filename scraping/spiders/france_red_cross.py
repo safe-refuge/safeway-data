@@ -180,6 +180,8 @@ def parse_categories(paragraph, _):
 
 def parse_website(paragraph, key):
     value = paragraph.css("span.value a::attr(href)").get().strip()
+    # HACK: some websites have this typo
+    value = value.replace(" ", "-")
     return {key: value.lower()}
 
 

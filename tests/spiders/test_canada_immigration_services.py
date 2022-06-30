@@ -12,7 +12,7 @@ from scraping.spiders.canada_immigration_services import (
 )
 
 
-@pytest.mark.usefixtures('betamax_session')
+@pytest.mark.usefixtures("betamax_session")
 def test_parse_points(betamax_session):
     spider: Spider = CanadaImmigrationServicesSpider()
     url = spider.start_urls[0]
@@ -32,7 +32,7 @@ def test_categories_mapping():
         assert cat in constants.CATEGORIES
 
 
-@pytest.mark.usefixtures('betamax_session')
+@pytest.mark.usefixtures("betamax_session")
 def test_build_categories(betamax_session):
     spider: Spider = CanadaImmigrationServicesSpider()
     url = spider.start_urls[0]

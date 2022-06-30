@@ -12,10 +12,12 @@ log = logging.getLogger(__name__)
 
 CATEGORIES = {
     'help_gar': 'Accommodation',
-    'lgbtq2': 'Social help',
+    'lgbtq2': 'LGBTQ+',
     'youth': 'Children',
     'general': 'Any help',
     'other': 'Any help',
+    'job_lang_training': 'Education',
+    'job_search': 'Jobs',
 }
 
 # Ref: https://ircc.canada.ca/js/tools/services/closest-services.js

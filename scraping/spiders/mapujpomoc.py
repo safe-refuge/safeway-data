@@ -32,6 +32,11 @@ CATEGORIES = {
     "toys": "Children",
     "transportation": "Transport",
     "water, sanitary facilities, hygiene": "Water",
+    "afterschool activities for children": "Children",
+    "counteracting sexual violence and human trafficking": "Social help",
+    "flashlights, batteries, chargers, power banks": "Electronics",
+    "polish language classes": "Education",
+    "training workshops for teachers or teaching assistants": "Education",
     "hygiene products (soap, diapers, personal hygiene)": DEFAULT_CATEGORY,
     "blankets, sheets, towels": DEFAULT_CATEGORY,
 }

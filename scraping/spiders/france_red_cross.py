@@ -1,5 +1,6 @@
 import re
 import logging
+import html
 
 import scrapy
 
@@ -145,7 +146,7 @@ def parse_default_key(paragraph, key):
 
 def parse_address(paragraph, _):
     values = paragraph.css("span.value::text").getall()
-    city = despacify(values[-1].split("\n")[-1]).title()
+    city = html.unescape(despacify(values[-1].split("\n")[-1]).title())
     address = despacify(" ".join(values[:-1])).title()
     return {
         "city": city,

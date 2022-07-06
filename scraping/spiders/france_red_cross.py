@@ -1,5 +1,6 @@
 import re
 import logging
+import html
 
 import scrapy
 
@@ -10,23 +11,23 @@ log = logging.getLogger(__name__)
 
 
 CATEGORIES = {
-    'domicile': 'Accommodation',
-    'enfants & familles': 'Children',
-    'personnes handicapees': 'Disability support',
-    "lutte contre l'exclusion": 'Social help',
-    'sanitaire': 'Medical',
+    "domicile": "Accommodation",
+    "enfants & familles": "Children",
+    "personnes handicapees": "Disability support",
+    "lutte contre l'exclusion": "Social help",
+    "sanitaire": "Medical",
 }
 
 SERVICES_TO_CATEGORIES = {
-    'aide alimentaire': 'Food',
-    'aides financières': 'Finance',
-    'textile & bric-à-brac': 'Clothes',
-    'accès aux soins et bien être': 'Medical',
-    'accueil et orientation': 'Accommodation',
-    'accueil famille-enfant': 'Children',
-    'espace bébé parents': 'Children',
-    'dynamique jeunesse': 'Children',
-    'postes de secours': 'Any help',
+    "aide alimentaire": "Food",
+    "aides financières": "Finance",
+    "textile & bric-à-brac": "Clothes",
+    "accès aux soins et bien être": "Medical",
+    "accueil et orientation": "Accommodation",
+    "accueil famille-enfant": "Children",
+    "espace bébé parents": "Children",
+    "dynamique jeunesse": "Children",
+    "postes de secours": "Any help",
 }
 
 
@@ -41,12 +42,12 @@ class FranceRedCrossSpider(scrapy.Spider):
         (Europe, U.S. seem to work well) may be needed.
     """
 
-    name = 'france_red_cross'
-    allowed_domains = ['croix-rouge.fr']
+    name = "france_red_cross"
+    allowed_domains = ["croix-rouge.fr"]
     start_urls = [
-        'https://www.croix-rouge.fr/Annuaire?structure_type%5B%5D=1'
-        '&structure_type%5B%5D=2&structure_type%5B%5D=3&structure_type%5B%5D=4'
-        '&field=-1&sector=-1&department=-1&address=&searchBtn=Rechercher',
+        "https://www.croix-rouge.fr/Annuaire?structure_type%5B%5D=1"
+        "&structure_type%5B%5D=2&structure_type%5B%5D=3&structure_type%5B%5D=4"
+        "&field=-1&sector=-1&department=-1&address=&searchBtn=Rechercher",
     ]
 
     # There's 165 pages in this directory as of 2022-05-22.
@@ -56,31 +57,31 @@ class FranceRedCrossSpider(scrapy.Spider):
     def parse(self, response, **kwargs):
         yield from parse_points(response)
 
-        next_page = response.css('li.next a::attr(href)').get()
+        next_page = response.css("li.next a::attr(href)").get()
         if next_page:
             yield response.follow(next_page, callback=self.parse)
 
 
 def parse_points(response):
-    blocks = response.css('article.item')
+    blocks = response.css("article.item")
     for block in blocks:
         yield parse_point(block)
 
 
 def parse_point(block):
-    name = block.css('h2 a span::text').get().strip().title()
+    name = block.css("h2 a span::text").get().strip().title()
 
     point = {
-        'name': name,
-        'country': 'France',
-        'organizations': ['Red Cross France'],
-        'lat': '',
-        'lng': '',
+        "name": name,
+        "country": "France",
+        "organizations": ["Red Cross France"],
+        "lat": "",
+        "lng": "",
     }
 
     # XXX: all info here is in French, might need to either make it explicit
     # (e.g. mark fields with .fr suffix) or use a translation service
-    paragraphs = block.css('p.row')
+    paragraphs = block.css("p.row")
     for paragraph in paragraphs:
         point.update(**parse_point_keys(paragraph))
 
@@ -91,70 +92,70 @@ def parse_point(block):
 
 def normalize_point_data(point):
     point.update(**{
-        'categories': [],
-        'description': '',
+        "categories": [],
+        "description": "",
     })
 
-    if point.get('_category'):
-        point['categories'] += [point['_category']]
+    if point.get("_category"):
+        point["categories"] += [point["_category"]]
 
-    if point.get('_relevant_services'):
-        point['categories'] += point['_relevant_services']
-        services = ', '.join(point['_relevant_services'])
-        point['description'] = f'Services available: {services}'
+    if point.get("_relevant_services"):
+        point["categories"] += point["_relevant_services"]
+        services = ", ".join(point["_relevant_services"])
+        point["description"] = f"Services available: {services}"
 
-    if not point['categories']:
-        point['categories'] = [DEFAULT_CATEGORY]
+    if not point["categories"]:
+        point["categories"] = [DEFAULT_CATEGORY]
 
-    if point.get('_other_services'):
-        services = ', '.join(point['_other_services'])
-        point['description'] += f'\nOther services: {services}'
+    if point.get("_other_services"):
+        services = ", ".join(point["_other_services"])
+        point["description"] += f"\nOther services: {services}"
 
-    point['description'] = point['description'].strip()
+    point["description"] = point["description"].strip()
 
     # all keys starting with _ are for processing purposes only
     for key in list(point.keys()):
-        if key.startswith('_'):
+        if key.startswith("_"):
             del(point[key])
 
 
 def parse_point_keys(paragraph):
     titles = {
-        'adresse': (None, parse_address),
-        'actions': (None, parse_actions),
-        'filière ': (None, parse_categories),
-        'site web': ('url', parse_website),
-        'téléphone': ('phone', parse_default_key),
-        'fax': ('_fax', parse_default_key),
-        "heures d'ouverture": ('open_hours', parse_default_key),
+        "adresse": (None, parse_address),
+        "actions": (None, parse_actions),
+        "filière ": (None, parse_categories),
+        "site web": ("url", parse_website),
+        "téléphone": ("phone", parse_default_key),
+        "fax": ("_fax", parse_default_key),
+        "heures d'ouverture": ("open_hours", parse_default_key),
     }
 
-    title = paragraph.css('strong::text').get().lower()
+    title = paragraph.css("strong::text").get().lower()
     keys = [v for k, v in titles.items() if title.startswith(k)]
     if not keys:
-        log.warning('Unknown title: %s', title)
+        log.warning("Unknown title: %s", title)
         return {}
     key, func = keys.pop()
     return func(paragraph, key)
 
 
 def parse_default_key(paragraph, key):
-    value = paragraph.css('span.value *::text').get().strip()
+    value = paragraph.css("span.value *::text").get().strip()
     return {key: value.title()}
 
 
 def parse_address(paragraph, _):
-    values = paragraph.css('span.value::text').getall()
-    city = despacify(values[-1].split('\n')[-1]).title()
-    address = despacify(' '.join(values[:-1])).title()
+    values = paragraph.css("span.value::text").getall()
+    city = html.unescape(despacify(values[-1].split("\n")[-1]).title())
+    address = despacify(" ".join(values[:-1])).title()
     return {
-        'city': city,
-        'address': f'{address}, {city}',
+        "city": city,
+        "address": f"{address}, {city}",
     }
 
 
 def parse_actions(paragraph, _):
-    actions = paragraph.css('span.value *::text').getall()
+    actions = paragraph.css("span.value *::text").getall()
     relevant_services = []
     other_services = []
     for action in actions:
@@ -164,22 +165,24 @@ def parse_actions(paragraph, _):
         else:
             other_services.append(action)
     return {
-        '_relevant_services': relevant_services,
-        '_other_services': other_services,
+        "_relevant_services": relevant_services,
+        "_other_services": other_services,
     }
 
 
 def parse_categories(paragraph, _):
-    category = paragraph.css('span.value *::text').get()
+    category = paragraph.css("span.value *::text").get()
     if not category:
         return {}
     return {
-        '_category': CATEGORIES[category.lower()]
+        "_category": CATEGORIES[category.lower()]
     } if category.lower() in CATEGORIES else {}
 
 
 def parse_website(paragraph, key):
-    value = paragraph.css('span.value a::attr(href)').get().strip()
+    value = paragraph.css("span.value a::attr(href)").get().strip()
+    # HACK: some websites have this typo
+    value = value.replace(" ", "-")
     return {key: value.lower()}
 
 
@@ -189,4 +192,4 @@ def despacify(txt):
 
     Squeeze multiple spacial symbols into a single " ".
     """
-    return re.sub(r'[\s]+', ' ', txt, flags=re.M).strip()
+    return re.sub(r"[\s]+", " ", txt, flags=re.M).strip()

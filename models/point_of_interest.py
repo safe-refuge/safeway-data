@@ -58,5 +58,6 @@ class PointOfInterest(BaseModel):
 
 def _convert_to_list(value: Any) -> List[str]:
     if isinstance(value, str):
-        return value.split(',')
-    return value
+        value = value.split(',')
+
+    return [sanitize_value(v) for v in value]

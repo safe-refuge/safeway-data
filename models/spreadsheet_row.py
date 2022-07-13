@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class SpreadsheetRow(BaseModel):
-    country_code: str = ""
+    country: str = ""
     name: str = ""
     city: str = ""
     address: str = ""

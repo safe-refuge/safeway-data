@@ -38,7 +38,15 @@ class CSVRepository:
         fieldnames = list(PointOfInterest.schema()["properties"].keys())
         file = self.open_file(self.settings.output_file)
 
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer = csv.DictWriter(
+            file,
+            fieldnames=fieldnames,
+            delimiter=',',
+            quotechar='"',
+            quoting=csv.QUOTE_ALL,
+            lineterminator='\n'
+        )
+
         writer.writeheader()
         for entry in entries:
             row = {
@@ -62,5 +70,8 @@ class CSVRepository:
             entries.append(PointOfInterest(**row))
 
         self.close_file(file)
+
+        if limit := self.settings.limit:
+            return entries[:limit]
 
         return entries

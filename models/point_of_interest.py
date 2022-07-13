@@ -1,3 +1,4 @@
+import html
 from typing import List, Any
 
 from pydantic import BaseModel, validator

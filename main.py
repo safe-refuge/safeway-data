@@ -12,9 +12,10 @@ def main(
         dry_run: Optional[bool] = False,
         spreadsheet_id: Optional[str] = None,
         input_file: Optional[str] = None,
-        santitize_address: bool = False
+        santitize_address: bool = False,
+        limit: Optional[int] = None
 ):
-    settings = Settings(_env_file="config/.env", sanitize_address=santitize_address)
+    settings = Settings(_env_file="config/.env", sanitize_address=santitize_address, limit=limit)
 
     spreadsheet_id = spreadsheet_id or settings.spreadsheet_id
     source = "file" if input_file else "spreadsheet"

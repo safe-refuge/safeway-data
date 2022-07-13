@@ -11,9 +11,11 @@ from config.settings import Settings
 from services.geocoding import Point
 from utils.phone_numbers import PolandPhoneNumberExtractorService
 
+
 memory = Memory(location='cache/poland_rjps')
 settings = Settings()
 COUNTRY_NAME = 'Poland'
+
 
 CATEGORY_MAPPING = {
     'Medical': ['21,22,23,24,20,19', '25,26,27,28,29,30'],

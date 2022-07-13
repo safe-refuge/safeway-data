@@ -35,6 +35,9 @@ class GoogleSheetsReader:
         response = self.make_request(request)
         result = self.process_response(response)
 
+        if limit := self.settings.limit:
+            return result[:limit]
+
         return result
 
     def process_response(self, response: dict) -> List[SpreadsheetRow]:

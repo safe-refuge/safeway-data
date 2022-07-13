@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseSettings, Field
 
@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     countries: List[str] = ["ALL"]
     output_file: str = "data/output.csv"
     sanitize_address: bool = Field(False, env="SANITIZE_ADDRESS")
+    limit: Optional[int] = None
 
     class Config:
         env_file = "config/.env"

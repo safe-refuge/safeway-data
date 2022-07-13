@@ -12,6 +12,9 @@ BOT_NAME = 'scraping'
 SPIDER_MODULES = ['scraping.spiders']
 NEWSPIDER_MODULE = 'scraping.spiders'
 
+FEED_EXPORTERS = {
+    'csv': 'scraping.exporters.CustomCsvItemExporter',
+}
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'scraping0 (+http://www.yourdomain.com)'

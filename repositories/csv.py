@@ -46,6 +46,7 @@ class CSVRepository:
             quoting=csv.QUOTE_ALL,
             lineterminator='\n'
         )
+
         writer.writeheader()
         for entry in entries:
             row = {

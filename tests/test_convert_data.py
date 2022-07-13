@@ -3,6 +3,7 @@ from typing import List
 
 from implemented import ConvertSpreadsheetData
 
+
 HEADERS = ['Name', 'City', 'Address', 'Latitude', 'Longitude', 'Category', 'Organizations', 'Description', 'Phone',
            'Website', 'E-mail', 'Opening hours/days']
 SAMPLE_ROW = ['The Ukrainian House', 'Warszawa', 'ul. Zamenhofa 1, 00-153', '52,24734033', '20,9964833',

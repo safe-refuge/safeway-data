@@ -13,4 +13,4 @@ with
 line breaks
     """
     sanitized = sanitize_value(value)
-    assert sanitized == "\nsome\ntext\nwith\nline breaks\n    "
+    assert sanitized == "some\ntext\nwith\nline breaks"

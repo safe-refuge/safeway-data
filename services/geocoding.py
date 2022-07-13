@@ -99,12 +99,14 @@ class GeoCodingProcessor:
         return entries
 
     def enhance_by_reverse_lookup(self, entry: PointOfInterest):
+        response: List[Mapping] = []
         try:
             response = self.make_reverse_geocode_request(
                 entry.lat, entry.lng, self.gmaps)
         except (googlemaps.exceptions.ApiError, googlemaps.exceptions.Timeout,
                 googlemaps.exceptions.TransportError) as e:
             self.log(f"Reverse geocode: failed {entry.lat},{entry.lng}: {e}")
+            return entry
 
         if not response:
             self.log(f"Reverse geocode: got 0 results {entry.lat},{entry.lng}")

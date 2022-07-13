@@ -60,7 +60,7 @@ class GoogleSheetsReader:
         return normalized
 
     def generate_row(self, values: List[str], headers: List[str], country: str) -> SpreadsheetRow:
-        row_data = {"country_code": country}
+        row_data = {}
         for key, value in zip(headers, values):
             row_data[key] = value
 

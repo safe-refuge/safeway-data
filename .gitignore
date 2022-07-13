@@ -165,3 +165,4 @@ service_account.json
 
 # Cache folder
 cache/*
+tests/cache/*

@@ -3,6 +3,7 @@ from typing import List
 
 from implemented import ConvertSpreadsheetData
 
+
 HEADERS = ['Name', 'City', 'Address', 'Latitude', 'Longitude', 'Category', 'Organizations', 'Description', 'Phone',
            'Website', 'E-mail', 'Opening hours/days']
 SAMPLE_ROW = ['The Ukrainian House', 'Warszawa', 'ul. Zamenhofa 1, 00-153', '52,24734033', '20,9964833',
@@ -57,6 +58,21 @@ def fake_make_geocode_request(*args, **kwargs):
     ]
 
 
+def fake_make_reverse_geocode_request(*args, **kwargs):
+    return [{
+        "address_components": [{
+            "long_name": "Warsaw",
+            "short_name": "Warsaw",
+            "types": ["administrative_area_level_1", "political"],
+        }, {
+            "long_name": "Poland",
+            "short_name": "Poland",
+            "types": ["country", "political"],
+        }],
+        "formatted_address": "ul. Zamenhofa 1, 00-153",
+    }]
+
+
 def fake_init_google_maps(key):
     return {}
 
@@ -73,6 +89,7 @@ def test_spreadsheet_data_conversion():
     usecase: ConvertSpreadsheetData = ConvertSpreadsheetData(
         make_request=fake_make_request,
         make_geocode_request=fake_make_geocode_request,
+        make_reverse_geocode_request=fake_make_reverse_geocode_request,
         init_google_maps=fake_init_google_maps,
         fetch_translated_text=stub_fetch_translated_text,
         open_file=fake_open_file,

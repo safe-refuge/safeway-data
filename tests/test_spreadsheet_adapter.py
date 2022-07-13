@@ -8,7 +8,7 @@ from models.spreadsheet_row import SpreadsheetRow
 @pytest.fixture
 def spreadsheet_row():
     return SpreadsheetRow(
-        country_code='PL',
+        country='Poland',
         name='The Ukrainian House',
         city='Warszawa',
         address='ul. Zamenhofa 1, 00-153',

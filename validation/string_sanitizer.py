@@ -2,4 +2,4 @@ import html
 
 
 def sanitize_value(value: str) -> str:
-    return html.unescape(value)
+    return html.unescape(value).strip()

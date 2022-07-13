@@ -12,7 +12,6 @@ class SpreadsheetAdapter:
         'latitude': 'lat',
         'longitude': 'lng',
         'category': 'categories',
-        'country_code': 'country',
         'opening_hours': 'open_hours',
     }
 
@@ -31,10 +30,6 @@ class SpreadsheetAdapter:
 
     def convert_noop(self, value: str) -> str:
         return value
-
-    def convert_country(self, country_code: str) -> str:
-        country = pycountry.countries.get(alpha_2=country_code)
-        return country.name if country else ''
 
     def convert_lat(self, latitude: str) -> str:
         return self._convert_number(latitude)

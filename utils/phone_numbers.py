@@ -13,9 +13,14 @@ class PhoneNumberExtractorService:
         return ''.join(list(digits))
 
     def get_phone_number_in_e164(self):
-        digits = self._get_digits(self.raw_phone)
+        _phone = self._remove_country_code()
+        digits = self._get_digits(_phone)
         phones = get_phone_numbers(digits, self.INTERNAL_NUMBER_LENGTH)
         return list(map(lambda phone: f'{self.COUNTRY_CODE} {phone}', phones))
+
+    def _remove_country_code(self):
+        self.raw_phone = self.raw_phone.replace('+ ', '+')
+        return self.raw_phone.replace(self.COUNTRY_CODE, '')
 
 
 class PolandPhoneNumberExtractorService(PhoneNumberExtractorService):

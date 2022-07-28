@@ -98,7 +98,7 @@ def test_spreadsheet_data_conversion():
     result = usecase.convert_spreadsheet("some-id")
     csv = FILE_VALUES[0]
     expected_row = '''"name","country","city","address","categories","organizations","description","lat","lng","phone","email","url","socialmedia","messenger","telegram","whatsapp","open_hours","tags","icon","approved","active"
-"The Ukrainian House","Poland","Warsaw","ul. Zamenhofa 1, 00-153","Accommodation","Fundacja “Nasz Wybór”","Crisis support center","52.24734033","20.9964833","+48 727 805 764","biuro@ukrainskidom.pl","","","","","","Monday:        09:00–19:00
+"The Ukrainian House","Poland","Warsaw","ul. Zamenhofa 1, 00-153","Accommodation","Fundacja “Nasz Wybór”","Crisis support center","52.24734033","20.9964833","+48 727805764","biuro@ukrainskidom.pl","","","","","","Monday:        09:00–19:00
 Tuesday:       09:00–19:00
 Wednesday:       09:00–19:00
 Thursday:       09:00–19:00

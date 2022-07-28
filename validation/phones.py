@@ -1,40 +1,33 @@
 import re
 
 import pycountry
-from phonenumbers.phonenumberutil import NumberParseException, country_code_for_region
+from phonenumbers.phonenumberutil import country_code_for_region
 
-import phonenumbers
-
-from utils.phone_numbers import PolandPhoneNumberExtractorService
+from utils.phone_numbers import PolandPhoneNumberExtractorService, PhoneNumberExtractorService
 
 
 def sanitise_phone(phone: str, country_name: str = None) -> str:
-    if not phone:
+    if (not phone) and (not country_name):
         return ''
-    prefix = None
-    if not has_prefix(phone):
-        prefix = get_prefix_by_country_name(country_name) if not country_name is None else None
-        phone = f'{prefix} {phone}' if (prefix and prefix not in phone) else phone
 
-    if prefix == '+48' or '+48' in phone:
-        found = PolandPhoneNumberExtractorService(phone).get_phone_number_in_e164()
-        return found[0] if found else ''
-    try:
-        _phone = phonenumbers.parse(clean_phone(phone), None)
-        if phonenumbers.is_possible_number(_phone) and phonenumbers.is_possible_number(_phone):
-            return phonenumbers.format_number(_phone, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
-    except NumberParseException:
-        pass
-    return ''
+    country_code = get_country_code(phone)
+    if country_code is None:
+        country_code = get_country_code_by_name(country_name) if country_name is not None else None
+    if country_code is None:
+        return ''
 
+    phone = f'{country_code} {phone}' if (country_code and country_code not in phone) else phone
 
-def clean_phone(phone: str) -> str:
-    first_phone = re.split(',|;', phone)[0]
-    digits_plugs = [char for char in first_phone if char in '0123456789+-() ']
-    return ''.join(digits_plugs).split('  ')[0]
+    fixed_length_internal_phone_mapping = {'+48': PolandPhoneNumberExtractorService}
+    class_ = fixed_length_internal_phone_mapping.get(
+        country_code,
+        get_phone_number_extractor_service_class_with_country_code(country_code))
+
+    found = class_(phone).get_phone_numbers_in_e164()
+    return found[0] if found else ''
 
 
-def get_prefix_by_country_name(country_name: str) -> str:
+def get_country_code_by_name(country_name: str) -> str:
     country = pycountry.countries.get(name=country_name)
 
     if country:
@@ -47,5 +40,13 @@ def get_prefix_by_country_name(country_name: str) -> str:
                 return v
 
 
-def has_prefix(phone: str) -> bool:
-    return '+' in phone
+def get_country_code(phone: str) -> str:
+    result = re.findall(r'(\+[\d]+)', phone)
+    return result[0].strip() if result else None
+
+
+def get_phone_number_extractor_service_class_with_country_code(country_code: str) -> [PhoneNumberExtractorService]:
+    class NormalPhoneNumberExtractorService(PhoneNumberExtractorService):
+        COUNTRY_CODE = country_code
+
+    return NormalPhoneNumberExtractorService

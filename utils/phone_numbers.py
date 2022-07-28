@@ -1,7 +1,11 @@
+import re
 from typing import List
 
+import phonenumbers
+from phonenumbers import NumberParseException
 
-class PhoneNumberExtractorService:
+
+class BasePhoneNumberExtractorService:
     INTERNAL_NUMBER_LENGTH: int = None
     COUNTRY_CODE: str = None
 
@@ -12,7 +16,7 @@ class PhoneNumberExtractorService:
         digits = [digit for digit in list(origin) if digit in '0123456789']
         return ''.join(list(digits))
 
-    def get_phone_number_in_e164(self):
+    def get_phone_numbers_in_e164(self):
         _phone = self._remove_country_code()
         digits = self._get_digits(_phone)
         phones = get_phone_numbers(digits, self.INTERNAL_NUMBER_LENGTH)
@@ -23,7 +27,37 @@ class PhoneNumberExtractorService:
         return self.raw_phone.replace(self.COUNTRY_CODE, '')
 
 
-class PolandPhoneNumberExtractorService(PhoneNumberExtractorService):
+class PhoneNumberExtractorService(BasePhoneNumberExtractorService):
+    INTERNAL_NUMBER_LENGTH = None
+
+    def get_phone_numbers_in_e164(self):
+        phone_numbers = self._split_phone_number()
+        parsed_phones = [self._parse_phone(phone) for phone in phone_numbers]
+        return [phone for phone in parsed_phones if phone]
+
+    def _split_phone_number(self):
+        result = re.findall(r'([+/0-9-– ()]+)', self.raw_phone)
+        return [phone.strip() for phone in result if len(phone) >= 2]
+
+    def _parse_phone(self, phone):
+        if (not phone) and (not self.COUNTRY_CODE):
+            return ''
+        cleaned_phone = self._clean_phone(phone)
+        country_code_phone = f'+{self.COUNTRY_CODE}{cleaned_phone}' \
+            if self.COUNTRY_CODE not in cleaned_phone else cleaned_phone
+        try:
+            _phone = phonenumbers.parse(country_code_phone, None)
+            if phonenumbers.is_possible_number(_phone) and phonenumbers.is_possible_number(_phone):
+                return phonenumbers.format_number(_phone, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
+        except NumberParseException:
+            pass
+
+    def _clean_phone(self, phone):
+        digits_plugs = [char for char in phone if char in '0123456789+-()/: ']
+        return ''.join(digits_plugs)
+
+
+class PolandPhoneNumberExtractorService(BasePhoneNumberExtractorService):
     INTERNAL_NUMBER_LENGTH = 9
     COUNTRY_CODE = '+48'
 

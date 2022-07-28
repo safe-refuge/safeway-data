@@ -43,11 +43,11 @@ class TestPolandRJPSSpider:
     def test_parse_phone(self, normal_place):
         spider = self.get_spider()
         phone = spider._get_phone(normal_place)
-        assert phone == '+48 857188100'
+        assert phone == '+48 85 7188100'
 
     @pytest.mark.parametrize('origin, expected', [
-        ('tel. 85 7188102', '+48 857188102'),
-        ('24 356 22 02  024 356 29 09', '+48 243562202')
+        ('tel. 85 7188102', '+48 85 7188102'),
+        ('24 356 22 02  024 356 29 09', '+48 24 356 22 02')
     ])
     def test_clean_phone(self, origin, expected):
         spider = self.get_spider()
@@ -70,7 +70,7 @@ class TestPolandRJPSSpider:
         spider = self.get_spider()
         spider._get_phone(normal_place)
         description = spider._get_description(normal_place)
-        assert description == 'Other phone numbers: +48 857188118\nupdated: 2018-02-05'
+        assert description == 'Other phone numbers: +48 85 7188118\nupdated: 2018-02-05'
 
     def get_spider(self):
         class StubPolandRJPSSpider(PolandRJPSSpider):

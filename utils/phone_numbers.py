@@ -1,5 +1,4 @@
 import re
-from typing import List
 
 import phonenumbers
 from phonenumbers import NumberParseException
@@ -12,14 +11,15 @@ class BasePhoneNumberExtractorService:
     def __init__(self, raw_phone: str):
         self.raw_phone = raw_phone
 
-    def _get_digits(self, origin):
-        digits = [digit for digit in list(origin) if digit in '0123456789']
-        return ''.join(list(digits))
+    def _get_phone_chars(self, origin):
+        digits = [digit for digit in list(origin) if digit in '0123456789 -()\n']
+        out = ''.join(list(digits))
+        return out.replace('()','')
 
     def get_phone_numbers_in_e164(self):
         _phone = self._remove_country_code()
-        digits = self._get_digits(_phone)
-        phones = get_phone_numbers(digits, self.INTERNAL_NUMBER_LENGTH)
+        phone_chars = self._get_phone_chars(_phone)
+        phones = get_human_phone_numbers('', phone_chars, self.INTERNAL_NUMBER_LENGTH)
         return list(map(lambda phone: f'{self.COUNTRY_CODE} {phone}', phones))
 
     def _remove_country_code(self):
@@ -62,19 +62,26 @@ class PolandPhoneNumberExtractorService(BasePhoneNumberExtractorService):
     COUNTRY_CODE = '+48'
 
 
-def get_phone_numbers(origin: str, internal_number_length) -> List[str]:
-    _origin = list(origin)
-    if len(_origin) < internal_number_length:
-        return []
+def get_human_phone_numbers(parsed: str, phone: str, internal_number_length: int) -> list[str]:
+    _characters = list(phone)
 
-    if len(_origin) == internal_number_length:
-        return [''.join(origin)]
+    parsed = parsed.lstrip()
 
-    if _origin[0] == '0':
-        left = _origin[1:1 + internal_number_length]
-        right = _origin[1 + internal_number_length:]
-    else:
-        left = _origin[:internal_number_length]
-        right = _origin[internal_number_length:]
-    return get_phone_numbers(''.join(left), internal_number_length) + \
-           get_phone_numbers(''.join(right), internal_number_length)
+    if len([p for p in clean_leading_chars_phone(parsed) if is_digit(p)]) == internal_number_length:
+        return [parsed] + get_human_phone_numbers('', phone, internal_number_length)
+
+    if len(phone) == 0:
+        return [parsed] if len(parsed) == internal_number_length else []
+
+    first = _characters[0]
+    rest = _characters[1:]
+
+    return get_human_phone_numbers(parsed + first, ''.join(rest), internal_number_length)
+
+def clean_leading_chars_phone(phone):
+    phone = phone.lstrip('(')
+    phone = phone.lstrip('0')
+    return phone
+
+def is_digit(alphabet: str) -> bool:
+    return alphabet in '0123456789'

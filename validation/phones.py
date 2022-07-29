@@ -16,8 +16,6 @@ def sanitise_phone(phone: str, country_name: str = None) -> str:
     if country_code is None:
         return ''
 
-    phone = f'{country_code} {phone}' if (country_code and country_code not in phone) else phone
-
     fixed_length_internal_phone_mapping = {'+48': PolandPhoneNumberExtractorService}
     class_ = fixed_length_internal_phone_mapping.get(
         country_code,

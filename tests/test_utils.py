@@ -63,3 +63,11 @@ class TestPhoneNumberExtractorService:
 
         service = dynamicPhoneNumberExtractor(origin)
         assert service.get_phone_numbers_in_e164() == expected
+
+    @pytest.mark.parametrize('origin, code, expected', [
+        ('+373 786 05 080', '+373', True),
+        ('373 786 05 080', '+373', True)
+    ])
+    def test_has_country_code(self, origin, code, expected):
+        real = PhoneNumberExtractorService._has_country_code(origin, code)
+        assert real == expected

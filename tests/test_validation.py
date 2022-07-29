@@ -95,7 +95,8 @@ def test_phone_validation_with_country(phone, country, expected):
     ('+48 25 781 60 74, 25 787 73 50', 'Poland', '+48 25 781 60 74'),
     ('+48 22 510 98 03-19 foo', 'Poland', '+48 22 510 98 03'),
     ('foo +48 22 510 98 03-19 bar', 'Poland', '+48 22 510 98 03'),
-    ('542851327', None, '')
+    ('542851327', None, ''),
+    ('373 786 05 080', 'Republic of Moldova' , '+373 786 05 080')
 ])
 def test_phone_validation_with_country_edge_cases(phone, country, expected):
     real = sanitise_phone(phone, country)

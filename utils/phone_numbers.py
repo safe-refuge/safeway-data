@@ -14,7 +14,7 @@ class BasePhoneNumberExtractorService:
     def _get_phone_chars(self, origin):
         digits = [digit for digit in list(origin) if digit in '0123456789 -()\n']
         out = ''.join(list(digits))
-        return out.replace('()','')
+        return out.replace('()', '')
 
     def get_phone_numbers_in_e164(self):
         _phone = self._remove_country_code()
@@ -44,7 +44,8 @@ class PhoneNumberExtractorService(BasePhoneNumberExtractorService):
             return ''
         cleaned_phone = self._clean_phone(phone)
         country_code_phone = f'+{self.COUNTRY_CODE}{cleaned_phone}' \
-            if self.COUNTRY_CODE not in cleaned_phone else cleaned_phone
+            if not self._has_country_code(phone, self.COUNTRY_CODE) else \
+            cleaned_phone if cleaned_phone.startswith('+') else f'+{cleaned_phone}'
         try:
             _phone = phonenumbers.parse(country_code_phone, None)
             if phonenumbers.is_possible_number(_phone) and phonenumbers.is_possible_number(_phone):
@@ -55,6 +56,11 @@ class PhoneNumberExtractorService(BasePhoneNumberExtractorService):
     def _clean_phone(self, phone):
         digits_plugs = [char for char in phone if char in '0123456789+-()/: ']
         return ''.join(digits_plugs)
+
+    @classmethod
+    def _has_country_code(cls, origin, code):
+        started_with_code_number = code.lstrip('+')
+        return any([origin.startswith(code), origin.startswith(started_with_code_number)])
 
 
 class PolandPhoneNumberExtractorService(BasePhoneNumberExtractorService):
@@ -78,10 +84,12 @@ def get_human_phone_numbers(parsed: str, phone: str, internal_number_length: int
 
     return get_human_phone_numbers(parsed + first, ''.join(rest), internal_number_length)
 
+
 def clean_leading_chars_phone(phone):
     phone = phone.lstrip('(')
     phone = phone.lstrip('0')
     return phone
+
 
 def is_digit(alphabet: str) -> bool:
     return alphabet in '0123456789'

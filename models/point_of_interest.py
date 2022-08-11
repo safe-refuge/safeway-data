@@ -51,9 +51,9 @@ class PointOfInterest(BaseModel):
     def sanitize_url(cls, url: str) -> str:
         return sanitise_url(url)
 
-    @validator('phone', pre=True)
-    def sanitize_phone(cls, phone: str) -> str:
-        return sanitise_phone(phone)
+    @validator('phone')
+    def sanitize_phone(cls, phone: str, values: dict) -> str:
+        return sanitise_phone(phone, values.get('country'))
 
 
 def _convert_to_list(value: Any) -> List[str]:

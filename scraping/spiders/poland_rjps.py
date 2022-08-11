@@ -107,7 +107,7 @@ class PolandRJPSSpider(scrapy.Spider):
 
     def _clean_phone(self, phone: str) -> str:
         service = PolandPhoneNumberExtractorService(phone)
-        phones = service.get_phone_number_in_e164()
+        phones = service.get_phone_numbers_in_e164()
         if len(phones) > 1:
             self.descriptions.append(f'Other phone numbers: {", ".join(phones[1:])}')
         return phones[0]

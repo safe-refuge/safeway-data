@@ -16,6 +16,7 @@ def complete_point_of_interest():
         address='ul. Zamenhofa 1, 00-153',
         lat='52.24734033',
         lng='20.9964833',
+        phone='+1 888-452-1505',
         categories=['Pharmacy'],
         organizations=['Fundacja “Nasz Wybór”'],
         description='Crisis support center'

@@ -4,7 +4,7 @@ from validation import Validator
 
 
 class RequiredFieldsValidator(Validator):
-    REQUIRED: Set[str] = {"name", "city", "country", "address", "lat", "lng"}
+    REQUIRED: Set[str] = {"name", "city", "country", "address", "lat", "lng", "phone"}
 
     def __init__(self, log: Callable = print):
         self.log = log

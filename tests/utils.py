@@ -19,6 +19,6 @@ def parse_betamax_response(session: Session, parse_function: Callable, url: str)
     return results
 
 
-def get_betamax_response(session: Session, url: str) -> HtmlResponse:
-    response: Response = session.get(url)
+def get_betamax_response(session: Session, url: str, **kwargs) -> HtmlResponse:
+    response: Response = session.get(url, **kwargs)
     return HtmlResponse(body=response.content, url=url)

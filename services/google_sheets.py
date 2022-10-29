@@ -23,6 +23,7 @@ class GoogleSheetsReader:
 
     # Injected dependencies
     settings: Settings
+    log: Callable
     make_request: Callable = make_request
 
     def fetch(self, spreadsheet_id: str) -> List[SpreadsheetRow]:
@@ -45,6 +46,9 @@ class GoogleSheetsReader:
         rows = response["values"]
         headers: List[str] = [self.normalize_header(header) for header in rows[0]]
         rows: List[SpreadsheetRow] = [self.generate_row(values, headers, country) for values in rows[1:]]
+
+        self.log(f"Loaded {len(rows)} records from spreadsheet.")
+
         return rows
 
     def normalize_header(self, header: str) -> str:

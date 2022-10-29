@@ -1,10 +1,10 @@
-from typing import Set, Callable
+from typing import Callable, List
 
 from validation import Validator
 
 
 class RequiredFieldsValidator(Validator):
-    REQUIRED: Set[str] = {"name", "city", "country", "address", "lat", "lng", "phone"}
+    REQUIRED: List[str] = ["name", "city", "country", "address", "lat", "lng", "phone"]
 
     def __init__(self, log: Callable = print):
         self.log = log
